@@ -12,7 +12,7 @@ import '../assets/styles/friends.css';
 import ClientLayout from "./ClientLayout"; 
 
 export const metadata = {
-  title: "Facebook Copy",
+  title: "Social Community",
   description: "",
 };
 
