@@ -1,0 +1,149 @@
+.fb-topbar {
+  position: sticky !important;
+  top: 0;
+  z-index: 9999;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fb-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fb-logo {
+  font-size: 32px;
+  color: #1877f2;
+}
+
+.fb-search-box {
+  display: flex;
+  align-items: center;
+  background: #f0f2f5;
+  padding: 6px 10px;
+  border-radius: 20px;
+}
+
+.fb-search-box input {
+  border: none;
+  background: transparent;
+  margin-left: 5px;
+}
+
+.fb-center {
+  display: flex;
+  gap: 20px;
+}
+
+.fb-nav-icon {
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.fb-nav-icon.active {
+  border-bottom: 3px solid #1877f2;
+}
+
+.fb-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fb-btn {
+  background: #e4e6eb;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.fb-icon-circle {
+  width: 38px;
+  height: 38px;
+  background: #e4e6eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.fb-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+
+.fb-mobile {
+  flex-direction: column;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  position: sticky !important;
+  top: 0;
+  z-index: 1000;
+}
+
+.fb-mobile-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.fb-mobile-nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  border-top: 1px solid #eee;
+}
+.fb-desktop-menu {
+  position: absolute;
+  right: 20px;
+  top: 60px;
+  width: 320px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.fb-menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.fb-menu-card {
+  background: #f0f2f5;
+  padding: 12px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fb-settings {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.fb-setting-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+/* hover bg sidemenu */
+.hover-bg-menu:hover{
+  background-color: #eee !important;
+}
+.hover-bg-menu{
+  line-height: 32px !important;
+}

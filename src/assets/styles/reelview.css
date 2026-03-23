@@ -1,0 +1,143 @@
+.rv-modal {
+  background: #000;
+}
+.rv-body {
+  background: #000;
+  padding: 0;
+}
+.rv-topbar {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  color: #fff;
+}
+.rv-close {
+  cursor: pointer;
+  font-size: 20px;
+}
+.rv-volume {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(0,0,0,0.6);
+  padding: 5px 10px;
+  border-radius: 20px;
+  position: absolute !important;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  cursor: pointer;
+}
+.rv-swiper {
+  height: 90vh;
+  border-radius: 15px;
+}
+.rv-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  position: relative;
+  
+}
+.rv-video {
+  height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+}
+.rv-play {
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    position: absolute;
+    background-color: #00000075;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    padding: 14px;
+    border-radius: 100px;
+}
+.rv-actions {
+  position: absolute;
+  right: 10px;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+}
+.rv-actions div {
+  color: #fff;
+  font-size: 18px;
+}
+.rv-bottom {
+  position: absolute;
+  bottom: 20px;
+  left: 10px;
+  color: #fff;
+  max-width: 70%;
+}
+.rv-user {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.rv-dropdown {
+  background: #1c1c1c;
+  left: -219px !important;
+  top: -85px !important;
+  width: 230px;
+  font-size: 14px !important;
+}
+.rv-swiper {
+  position: relative;
+}
+.rv-swiper .swiper-button-next,
+.rv-swiper .swiper-button-prev {
+  top: 15px !important;
+  width: 35px;
+  height: 35px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  color: #fff !important;
+}
+.rv-swiper .swiper-button-next {
+  left: 30px !important;
+}
+.rv-swiper .swiper-button-prev {
+  left: 65px !important;
+}
+.rv-swiper .swiper-button-next::after,
+.rv-swiper .swiper-button-prev::after {
+  font-size: 14px;
+}
+
+
+.rv-vertical-icons {
+    width: 50px;
+    height: 50px;
+    background-color: #00000087;
+    padding: 5px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+/* dropdown more*/
+.rel-drp.dropdown-menu.show {
+    left: unset !important;
+    right: 30px !important;
+    font-size: 14px !important;
+    /* top: -px !important; */
+}
+
+
+@media only screen and (max-width: 600px) {
+    .rv-swiper {
+  height: 100vh;
+ } 
+
+}

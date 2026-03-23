@@ -1,0 +1,71 @@
+/* Main Wrapper */
+.fb-friends-wrapper {
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.fb-sidebar-wrapper {
+  background: #ffffff;
+  padding: 20px;
+  height: 100vh;
+}
+
+.fb-sidebar-title {
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.fb-sidebar-item {
+  cursor: pointer;
+  border-radius: 10px !important;
+  margin-bottom: 8px;
+}
+
+.fb-sidebar-item:hover {
+  background: #f0f2f5;
+}
+
+/* Cards */
+.fb-friend-card {
+  border-radius: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.fb-img-placeholder {
+  height: 150px;
+  background: #d8d8d8;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.fb-followers-text {
+  font-size: 13px;
+  color: gray;
+}
+
+/* Mobile Header */
+.fb-mobile-header {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: white;
+}
+
+.fb-back-btn {
+  border: none;
+  background: none;
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.fb-mobile-title {
+  margin: 0 auto;
+}
+
+/* Empty */
+.fb-empty-state {
+  text-align: center;
+  padding: 40px;
+}
