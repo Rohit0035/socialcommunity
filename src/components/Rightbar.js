@@ -124,7 +124,7 @@ const Rightbar = () => {
     <div className="position-sticky" style={{ top: "20px" }}>
       <PerfectScrollbar style={{ maxHeight: "85vh" }}>
         <div className="d-flex align-items-center justify-content-between mb-4">
-          <Link href="/profile" className="d-flex align-items-center gap-2 text-decoration-none text-dark">
+          <Link href="/main/profile" className="d-flex align-items-center gap-2 text-decoration-none text-dark">
             <Image
               src="https://i.pravatar.cc/100?img=10"
               width={45}

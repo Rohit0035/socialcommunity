@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "aos": "^2.3.4",
     "bootstrap": "^5.3.8",
     "emoji-picker-react": "^4.18.0",
@@ -16,17 +18,23 @@
     "next": "^16.1.6",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-draggable": "^4.5.0",
     "react-fast-marquee": "^1.6.5",
     "react-icons": "^5.5.0",
     "react-insta-stories": "^2.8.0",
     "react-leaflet": "^4.2.1",
     "react-perfect-scrollbar": "^1.5.8",
+    "react-player": "^3.4.0",
     "react-select": "^5.10.2",
     "react-type-animation": "^3.2.0",
     "reactstrap": "^9.2.3",
     "recharts": "^3.3.0",
+    "remotion": "^4.0.447",
     "sass": "^1.93.2",
+    "stream-chat": "^9.43.2",
+    "stream-chat-react": "^14.1.0",
     "swiper": "^12.0.3",
+    "wavesurfer.js": "^7.12.6",
     "yet-another-react-lightbox": "^3.25.0"
   },
   "devDependencies": {

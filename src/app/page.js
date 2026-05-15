@@ -1,10 +1,5 @@
-"use client";
-import HomeIndex from "./home/HomeIndex";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <>
-       <HomeIndex/>
-    </>
-  );
+  redirect("/auth/register"); 
 }

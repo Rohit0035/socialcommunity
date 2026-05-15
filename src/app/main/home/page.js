@@ -1,16 +1,16 @@
 import { Container, Row, Col } from "reactstrap";
-import Feed from "../../components/Feed";
-import Rightbar from "../../components/Rightbar";
+import Feed from "../../../components/Feed";
+import Rightbar from "../../../components/Rightbar";
 
-export default function Home() {
+export default function HomeIndex () {
   return (
     <Container fluid className="pt-3">
       <Row>
         {/* Feed */}
-        <Col lg="1" md="1" xs="12">
-        </Col>
+        {/* <Col lg="1" md="1" xs="12">
+        </Col> */}
         {/* Feed */}
-        <Col lg="7" md="7" xs="12">
+        <Col lg="8" md="7" xs="12">
           <Feed />
         </Col>
 

@@ -9,7 +9,7 @@ import "swiper/css/pagination";
 import "yet-another-react-lightbox/styles.css";
 import '../assets/styles/friends.css';
 
-import ClientLayout from "./ClientLayout"; 
+import ClientLayout from "./ClientLayout.old"; 
 
 export const metadata = {
   title: "Social Community",
@@ -18,10 +18,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
-        <ClientLayout>{children}</ClientLayout>
-      </body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
   );
 }
+
+

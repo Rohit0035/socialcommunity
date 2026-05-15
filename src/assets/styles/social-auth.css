@@ -1,0 +1,134 @@
+.auth-main {
+  height: 100vh;
+}
+
+/* LEFT */
+.left-section {
+  background: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-swiper {
+  width: 100%;
+  text-align: center;
+  color: white;
+}
+
+.slide-content img {
+  width: 300px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.slide-content h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.slide-content p {
+  max-width: 350px;
+  margin: auto;
+  opacity: 0.9;
+}
+
+/* RIGHT */
+.right-section {
+  background: #f5f7fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 400px;
+}
+
+/* LOGO */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.logo-icon {
+  font-size: 24px;
+  color: #3b82c4;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 25px;
+}
+
+/* FORM */
+.form-group label {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 5px;
+}
+
+.input-box svg {
+  margin-right: 10px;
+  color: #6b7280;
+}
+
+.input-box input {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* TERMS */
+.terms {
+  margin: 15px 0;
+  font-size: 13px;
+}
+
+.terms a {
+  color: #3b82c4;
+  cursor: pointer;
+}
+
+/* BUTTON */
+.signup-btn {
+  width: 100%;
+  background: #5fa8e6 !important;
+  border: none !important;
+  padding: 12px;
+  font-weight: 600;
+}
+
+/* BOTTOM */
+.bottom-text {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.bottom-text span {
+  color: #3b82c4;
+  cursor: pointer;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+  .left-section {
+    display: none !important;
+  }
+
+  .auth-card {
+    width: 100%;
+    padding: 20px;
+  }
+}

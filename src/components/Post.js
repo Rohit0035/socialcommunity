@@ -10,7 +10,9 @@ import {
   ModalBody,
   UncontrolledPopover,
   PopoverBody,
-  Button
+  Button,
+  Container,
+  Row
 } from "reactstrap";
 
 import {
@@ -25,7 +27,7 @@ import {
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import "swiper/css/navigation";
+
 import { BsFillSendFill } from "react-icons/bs";
 import CommentsModal from "./common/CommentsModal";
 import ShareModal from "./common/ShareModal";
@@ -151,7 +153,6 @@ const Post = () => {
             <FaEllipsisH onClick={() => setMenuOpen(true)} style={{ cursor: "pointer" }} />
           </div>
 
-          {/* 🔥 SWIPER */}
           <Swiper modules={[Navigation]}
             navigation>
             {mediaData.map((item, i) => (

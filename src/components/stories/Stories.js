@@ -9,6 +9,7 @@ import "swiper/css/navigation";
 
 import Image from "next/image";
 import StoryViewer from "./StoryViewer";
+import { Card, CardBody } from "reactstrap";
 
 const storiesData = [
   {
@@ -133,51 +134,56 @@ const Stories = () => {
   return (
     <>
       <div className="mb-4">
-         <Swiper
-        modules={[Navigation]}
-        navigation
-        spaceBetween={8}
-        grabCursor={true}
-        breakpoints={{
-          0: {
-            slidesPerView: 4,
-          },
-          640: {
-            slidesPerView: 5,
-          },
-          1024: {
-            slidesPerView: 6,
-          },
-        }}
-      >
-        {storiesData.map((item, i) => (
-          <SwiperSlide key={item.id}>
-            <div
-              className="text-center"
-              style={{ cursor: "pointer" }}
-              onClick={() => openStory(i)}
+        <Card className="border-0">
+          <CardBody>
+            <Swiper
+              modules={[Navigation]}
+              navigation
+              spaceBetween={8}
+              grabCursor={true}
+              breakpoints={{
+                0: {
+                  slidesPerView: 4,
+                },
+                640: {
+                  slidesPerView: 5,
+                },
+                1024: {
+                  slidesPerView: 6,
+                },
+              }}
             >
-              {/* Avatar */}
-              <div className="story-ring mx-auto">
-                <Image
-                  src={item.avatar}
-                  width={70}
-                  height={70}
-                  className="rounded-circle story-img"
-                  alt={item.user}
-                />
-              </div>
+              {storiesData.map((item, i) => (
+                <SwiperSlide key={item.id}>
+                  <div
+                    className="text-center"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => openStory(i)}
+                  >
+                    {/* Avatar */}
+                    <div className="story-ring mx-auto">
+                      <Image
+                        src={item.avatar}
+                        width={70}
+                        height={70}
+                        className="rounded-circle story-img"
+                        alt={item.user}
+                      />
+                    </div>
 
-              {/* Username */}
-              <small className="d-block mt-0 text-truncate st-txt-o">
-                {item.user}
-              </small>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+                    {/* Username */}
+                    <small className="d-block mt-0 text-truncate st-txt-o">
+                      {item.user}
+                    </small>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </CardBody>
+        </Card>
+
       </div>
-     
+
 
       {/* Story Viewer */}
       {isOpen && (

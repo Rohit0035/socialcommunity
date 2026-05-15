@@ -15,15 +15,15 @@ import { TbMessageReport } from "react-icons/tb";
 import { CiUser } from "react-icons/ci";
 
 export const sidebarMenu = [
-  { icon: GoHome, label: "Home", link: "/" },
-  { icon: CgPlayButtonR, label: "Reels", link: "/reels" },
-  { icon: BsFillSendFill, label: "Messages", link: "/messages" },
-  { icon: IoSearch, label: "Search", link: "/search" },
-  { icon: MdOutlineExplore, label: "Explore", link: "/explore" },
-  { icon: FaRegHeart, label: "Notifications", link: "/notifications" },
+  { icon: GoHome, label: "Home", link: "/main/home" },
+  { icon: CgPlayButtonR, label: "Reels", link: "/main/reels" },
+  { icon: BsFillSendFill, label: "Messages", link: "/main/home" },
+  { icon: IoSearch, label: "Search", link: "/main/search" },
+  // { icon: MdOutlineExplore, label: "Explore", link: "/explore" },
+  { icon: FaRegHeart, label: "Notifications", link: "/main/notifications" },
   { icon: GoPlus, label: "Create", link: "/create" },
-  { icon: MdOutlineInsertChart, label: "Dashboard", link: "/dashboard" },
-  { icon: CgProfile, label: "Profile", link: "/profile" },
+  { icon: MdOutlineInsertChart, label: "Dashboard", link: "/main/dashboard" },
+  { icon: CgProfile, label: "Profile", link: "/main/profile" },
 ];
 
 export const moreMenu = [
@@ -33,5 +33,5 @@ export const moreMenu = [
   // { icon: GoHome, label: "Switch appearance", link: "/appearance" },
   { icon: TbMessageReport, label: "Report a problem", link: "/report" },
   { icon: CiUser, label: "Switch accounts", link: "/accounts" },
-  { icon: GoHome, label: "Log out", link: "/logout" },
+  { icon: GoHome, label: "Log out", link: "/auth/login" },
 ];
