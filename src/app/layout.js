@@ -10,6 +10,7 @@ import "yet-another-react-lightbox/styles.css";
 import '../assets/styles/friends.css';
 
 import ClientLayout from "./ClientLayout.old"; 
+import Providers from "./providers";
 
 export const metadata = {
   title: "Social Community",
@@ -19,7 +20,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }

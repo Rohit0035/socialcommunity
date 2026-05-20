@@ -10,6 +10,7 @@ import {
   DropdownItem,
 } from "reactstrap";
 import { FaBars } from "react-icons/fa6";
+import { signOut } from "next-auth/react";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
@@ -52,15 +53,28 @@ const Sidebar = () => {
             const Icon = item.icon; // <-- ADD THIS
 
             return (
-              <DropdownItem key={i}>
-                <Link
-                  href={item.link}
-                  className="sidebar-item d-flex align-items-center py-2 px-2"
-                >
-                  <Icon className="icon fs-5" /> {/* now it works */}
-                  <span className="label">{item.label}</span>
-                </Link>
-              </DropdownItem>
+              item.label === "Log out" ?
+                <DropdownItem key={i}>
+                  <Link
+                    href='#'
+                    onClick={() => signOut({
+                      callbackUrl: "/auth/login",
+                    })}
+                    className="sidebar-item d-flex align-items-center py-2 px-2"
+                  >
+                    <Icon className="icon fs-5" /> {/* now it works */}
+                    <span className="label">{item.label}</span>
+                  </Link>
+                </DropdownItem> :
+                <DropdownItem key={i}>
+                  <Link
+                    href={item.link}
+                    className="sidebar-item d-flex align-items-center py-2 px-2"
+                  >
+                    <Icon className="icon fs-5" /> {/* now it works */}
+                    <span className="label">{item.label}</span>
+                  </Link>
+                </DropdownItem>
             );
           })}
         </DropdownMenu>

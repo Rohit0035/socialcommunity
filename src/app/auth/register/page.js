@@ -1,7 +1,16 @@
 "use client";
 import { useState } from "react";
 import { Container, Row, Col, Input } from "reactstrap";
-import { FaRegUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import {
+  FaRegUser,
+  FaEnvelope,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaGoogle,
+  FaGithub,
+} from "react-icons/fa";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "../../../assets/styles/social-auth.css";
@@ -9,8 +18,46 @@ import Authimf1 from "../../../assets/images/auth-sl-1.jpg";
 import Authimg2 from "../../../assets/images/auth-sl2.jpg";
 import Image from "next/image";
 
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react"; // ADD THIS
+
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleRegister = async () => {
+    try {
+      setLoading(true);
+
+      const res = await axios.post("/api/register", formData);
+
+      if (res.data) {
+        alert("Account Created");
+
+        router.push("/auth/login");
+      }
+    } catch (error) {
+      alert(error?.response?.data?.error || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Container fluid className="auth-main px-0">
@@ -24,10 +71,15 @@ const RegisterPage = () => {
           >
             <SwiperSlide>
               <div className="slide-content">
-                <div className="mb-2 mx-auto" style={{ width: '200px', height: '200px' }}>
+                <div
+                  className="mb-2 mx-auto"
+                  style={{ width: "200px", height: "200px" }}
+                >
                   <Image src={Authimf1} alt="slide" className="w-100 h-100" />
                 </div>
+
                 <h3>Together Is Better</h3>
+
                 <p className="text-white">
                   It is a long established fact that a reader will be distracted
                   by readable content.
@@ -37,10 +89,19 @@ const RegisterPage = () => {
 
             <SwiperSlide>
               <div className="slide-content">
-                <div className="mb-2 mx-auto" style={{ width: '200px', height: '200px', borderRadius: '100px' }}>
+                <div
+                  className="mb-2 mx-auto"
+                  style={{
+                    width: "200px",
+                    height: "200px",
+                    borderRadius: "100px",
+                  }}
+                >
                   <Image src={Authimg2} alt="slide" className="w-100 h-100" />
                 </div>
+
                 <h3>Share Your Moments</h3>
+
                 <p className="text-white">
                   Upload reels and connect with the world instantly.
                 </p>
@@ -55,29 +116,63 @@ const RegisterPage = () => {
               <span className="logo-icon">◉</span>
               <h4>Logo</h4>
             </div>
+
             <p className="subtitle">
               Welcome to Logo, a platform to connect with the social world
             </p>
 
             <div className="form-group">
               <label>Your Full Name</label>
+
               <div className="input-box">
                 <FaRegUser />
-                <Input placeholder="marvin shaw" />
+
+                <Input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Your Name"
+                />
               </div>
+
               <label>Email Address</label>
+
               <div className="input-box">
                 <FaEnvelope />
-                <Input placeholder="marvin@example.com" />
-              </div>
-              <label>Your Password</label>
-              <div className="input-box" style={{ position: "relative" }}>
-                <FaLock style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "#555" }} />
+
                 <Input
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="youremail@example"
+                />
+              </div>
+
+              <label>Your Password</label>
+
+              <div
+                className="input-box"
+                style={{ position: "relative" }}
+              >
+                <FaLock
+                  style={{
+                    position: "absolute",
+                    left: "10px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "#555",
+                  }}
+                />
+
+                <Input
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   type={showPassword ? "text" : "password"}
-                  placeholder="******"
+                  placeholder="Password"
                   style={{ paddingLeft: "35px" }}
                 />
+
                 <span
                   onClick={() => setShowPassword(!showPassword)}
                   style={{
@@ -86,26 +181,61 @@ const RegisterPage = () => {
                     top: "50%",
                     transform: "translateY(-50%)",
                     cursor: "pointer",
-                    color: "#555"
+                    color: "#555",
                   }}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </span>
               </div>
+
               <div className="terms">
-                <input type="checkbox" />
-                <span>
+                <input type="checkbox" id="terms" />
+
+                <label htmlFor="terms">
                   I Accept <a>Terms And Conditions</a>
-                </span>
+                </label>
               </div>
-              <a href="/main/home" className="btn btn-primary w-100">SIGN UP</a>
+
+              <button
+                onClick={handleRegister}
+                className="btn btn-primary w-100"
+              >
+                {loading ? "Loading..." : "SIGN UP"}
+              </button>
+
+              <div className="my-4 text-center text-muted">
+                <span>--------- Or ---------</span>
+              </div>
+
+              {/* GOOGLE BUTTON */}
+              <button
+                onClick={() => signIn("google", {
+                  callbackUrl: "/main/home",
+                })}
+                className="btn btn-danger w-100"
+              >
+                <FaGoogle /> Continue with Google
+              </button>
+
+              {/* GITHUB BUTTON */}
+              <button
+                onClick={() => signIn("github", {
+                  callbackUrl: "/main/home",
+                })}
+                className="btn btn-dark w-100 mt-2"
+              >
+                <FaGithub /> Continue with GitHub
+              </button>
+
               <p className="bottom-text">
-                Already Have An Account ? <span><a href="/auth/login">Login</a></span>
+                Already Have An Account ?{" "}
+                <span>
+                  <a href="/auth/login">Login</a>
+                </span>
               </p>
             </div>
           </div>
         </Col>
-
       </Row>
     </Container>
   );
