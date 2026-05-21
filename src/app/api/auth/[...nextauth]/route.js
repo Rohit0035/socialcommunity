@@ -12,41 +12,50 @@ import User from "@/models/User";
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
-      name: "credentials",
+  name: "credentials",
 
-      credentials: {
-        email: {},
-        password: {},
-      },
+  credentials: {
+    identifier: {}, // email or username
+    password: {},
+  },
 
-      async authorize(credentials) {
-        await connectDB();
+  async authorize(credentials) {
+    await connectDB();
 
-        const user = await User.findOne({
-          email: credentials.email,
-        });
+    const user = await User.findOne({
+      $or: [
+        { email: credentials.identifier },
+        { username: credentials.identifier },
+      ],
+    });
 
-        if (!user) {
-          throw new Error("User not found");
-        }
+    if (!user) {
+      throw new Error("User not found");
+    }
 
-        const isPasswordCorrect = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+    // optional safety check for social login users
+    if (!user.password) {
+      throw new Error("Please login with Google or GitHub");
+    }
 
-        if (!isPasswordCorrect) {
-          throw new Error("Invalid password");
-        }
+    const isPasswordCorrect = await bcrypt.compare(
+      credentials.password,
+      user.password
+    );
 
-        return {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          image: user.image,
-        };
-      },
-    }),
+    if (!isPasswordCorrect) {
+      throw new Error("Invalid password");
+    }
+
+    return {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      image: user.image,
+      username: user.username,
+    };
+  },
+}),
 
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,

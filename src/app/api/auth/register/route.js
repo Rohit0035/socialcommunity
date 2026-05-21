@@ -5,7 +5,7 @@ import User from "@/models/User";
 
 export async function POST(req) {
   try {
-    const { name, email, password } = await req.json();
+    const { email, password,name, dateOfBirth, username } = await req.json();
 
     await connectDB();
 
@@ -17,13 +17,26 @@ export async function POST(req) {
         { status: 400 }
       );
     }
+    
+    if(username){
+      const existingUsername = await User.findOne({ username });
+  
+      if (existingUsername) {
+        return Response.json(
+          { error: "Username already exists" },
+          { status: 400 }
+        );
+      }
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      name,
       email,
       password: hashedPassword,
+      dateOfBirth,
+      name,
+      username,
     });
 
     return Response.json(user);

@@ -23,6 +23,7 @@ import Image from "next/image";
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { FcGoogle } from "react-icons/fc";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +31,7 @@ const LoginPage = () => {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "",
     password: "",
   });
 
@@ -55,8 +56,8 @@ const LoginPage = () => {
   const validate = () => {
     let newErrors = {};
 
-    if (!formData.email) {
-      newErrors.email = "Email is required";
+    if (!formData.identifier) {
+      newErrors.identifier = "Either email or username is required";
     }
 
     if (!formData.password) {
@@ -75,7 +76,7 @@ const LoginPage = () => {
       setLoading(true);
 
       const res = await signIn("credentials", {
-        email: formData.email,
+        identifier: formData.identifier,
         password: formData.password,
         redirect: false,
       });
@@ -84,7 +85,7 @@ const LoginPage = () => {
         router.push("/main/home");
       } else {
         setErrors({
-          general: "Invalid email or password",
+          general: "Invalid email/username or password",
         });
       }
     } catch (error) {
@@ -180,22 +181,22 @@ const LoginPage = () => {
             <div className="form-group">
 
               {/* Email */}
-              <label>Email Address</label>
+              <label>Email or Username</label>
 
               <div className="input-box">
                 <FaEnvelope />
 
                 <Input
-                  name="email"
-                  value={formData.email}
+                  name="identifier"
+                  value={formData.identifier}
                   onChange={handleChange}
-                  placeholder="youremail@example"
+                  placeholder="Email or Username"
                 />
               </div>
 
-              {errors.email && (
+              {errors.identifier && (
                 <p className="text-danger small mt-1">
-                  {errors.email}
+                  {errors.identifier}
                 </p>
               )}
 
@@ -270,26 +271,14 @@ const LoginPage = () => {
                 <span>--------- Or ---------</span>
               </div>
 
+              {/* GOOGLE BUTTON */}
               <button
-                onClick={() =>
-                  signIn("google", {
-                    callbackUrl: "/main/home",
-                  })
-                }
-                className="btn btn-danger w-100"
+                onClick={() => signIn("google", {
+                  callbackUrl: "/main/home",
+                })}
+                className="btn btn-light w-100"
               >
-                <FaGoogle /> Continue with Google
-              </button>
-
-              <button
-                onClick={() =>
-                  signIn("github", {
-                    callbackUrl: "/main/home",
-                  })
-                }
-                className="btn btn-dark w-100 mt-2"
-              >
-                <FaGithub /> Continue with GitHub
+                <FcGoogle  size={30}/> Continue with Google
               </button>
 
               <p className="bottom-text mt-2">

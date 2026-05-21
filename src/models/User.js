@@ -2,16 +2,25 @@ import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
   {
-    name: String,
     email: {
       type: String,
       unique: true,
     },
     password: String,
+    dateOfBirth: String,
+    name: String,
+    username: {type:String},
     image: String,
     provider: {
       type: String,
       default: "credentials",
+    },
+    resetPasswordToken: {
+      type: String,
+    },
+
+    resetPasswordExpire: {
+      type: Date,
     },
   },
   { timestamps: true }

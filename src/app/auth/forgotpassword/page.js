@@ -8,9 +8,68 @@ import "../../../assets/styles/social-auth.css";
 import Authimf1 from "../../../assets/images/auth-sl-1.jpg";
 import Authimg2 from "../../../assets/images/auth-sl2.jpg";
 import Image from "next/image";
+import axios from "axios";
 
 const ForgotPasswordPage = () => {
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    });
+
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState("");
+  const [message, setMessage] = useState("");
+  
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+
+    // remove error while typing
+    setErrors({
+      ...errors,
+      [e.target.name]: "",
+      general: "",
+    });
+  };
+   const validate = () => {
+    let newErrors = {};
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    }
+
+    if(formData.email && !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)){
+      newErrors.email = "Invalid email";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+      if (!validate()) return;
+      setLoading(true);
+      setMessage("");
+
+      const res = await axios.post(
+        "/api/auth/forgot-password",
+        { email: formData.email }
+      );
+
+      setMessage(res.data.message);
+    } catch (error) {
+      console.log(error);
+      setErrors({
+        general: error?.response?.data?.error || "Something went wrong",
+      }
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Container fluid className="auth-main px-0">
@@ -61,20 +120,40 @@ const ForgotPasswordPage = () => {
               Forgot your password? Enter your email to reset it.
             </p>
 
+            {errors.general && (
+              <div className="alert alert-danger mt-3">
+                {errors.general}
+              </div>
+            )}
+
             <div className="form-group">
               {/* Email Input */}
               <label>Email Address</label>
               <div className="input-box">
                 <FaEnvelope />
                 <Input
+                  name="email"
                   type="email"
                   placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                 />
               </div>
+              {errors.email && <p className="text-danger mt-2">{errors.email}</p>}
 
-              <a href="/login" className="btn btn-primary w-100 mt-3">Send Reset Link</a>
+              <button
+                onClick={handleForgotPassword}
+                className="btn btn-primary w-100 mt-3"
+              >
+                {loading ? "Sending..." : "Send Reset Link"}
+              </button>
+
+              {message && (
+                <div className="alert alert-success mt-3">
+                  {message}
+                </div>
+              )}
+              
               <p className="bottom-text mt-2">
                 Remembered your password? <span><a href="/auth/login">Login</a></span>
               </p>
