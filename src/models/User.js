@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
   {
+    //AUTH
     email: {
       type: String,
       unique: true,
@@ -15,6 +16,8 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "credentials",
     },
+    
+    //RESET PASSWORD
     resetPasswordToken: {
       type: String,
     },

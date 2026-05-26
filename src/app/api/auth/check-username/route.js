@@ -15,6 +15,7 @@ export async function GET(req) {
       exists: !!existingUser,
     });
   } catch (error) {
+    console.log(error);
     return Response.json(
       { error: "Server Error" },
       { status: 500 }
