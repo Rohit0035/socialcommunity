@@ -5,7 +5,7 @@ export default function ReelCreate() {
   return (
     <Container fluid className="pt-3">
       <Row>
-         <Col md="8" className="mx-auto">
+         <Col md="12" className="mx-auto">
             <AdvancedEditor/>
          </Col>
       </Row>

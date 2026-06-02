@@ -10,6 +10,8 @@ import "swiper/css/navigation";
 import Image from "next/image";
 import StoryViewer from "./StoryViewer";
 import { Card, CardBody } from "reactstrap";
+import { FaPlus } from "react-icons/fa";
+import CreateStoryModal from "../create-story/CreateStoryModal";
 
 const storiesData = [
   {
@@ -124,12 +126,24 @@ const Stories = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
+
+
   const openStory = (i) => {
     setActiveIndex(i);
     setIsOpen(true);
   };
 
   const closeStory = () => setIsOpen(false);
+
+ const [showCreateStoryModal, setShowCreateStoryModal] = useState(false);
+
+const handleOpenCreateStoryModal = () => {
+  setShowCreateStoryModal(true);
+};
+
+const handleCloseCreateStoryModal = () => {
+  setShowCreateStoryModal(false);
+};
 
   return (
     <>
@@ -153,6 +167,55 @@ const Stories = () => {
                 },
               }}
             >
+              {/* CREATE STORY */}
+              <SwiperSlide>
+                <div
+                  className="text-center"
+                  onClick={handleOpenCreateStoryModal}
+                  style={{ cursor: "pointer" }}
+                >                  <div
+                    className="
+                      position-relative
+                      mx-auto
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                      rounded-circle
+                      border
+                      bg-light
+                    "
+                    style={{
+                      width: 70,
+                      height: 70,
+                    }}
+                  >
+                    <FaPlus size={22} />
+                    <div
+                      className="
+                      position-absolute
+                      bottom-0
+                      end-0
+                      bg-primary
+                      text-white
+                      rounded-circle
+                      d-flex
+                      align-items-center
+                      justify-content-center
+        "
+                      style={{
+                        width: 22,
+                        height: 22,
+                        border: "2px solid #fff",
+                      }}
+                    >
+                      <FaPlus size={10} />
+                    </div>
+                  </div>
+                  <small className="d-block mt-1 text-truncate st-txt-o">
+                    Your Story
+                  </small>
+                </div>
+              </SwiperSlide>
               {storiesData.map((item, i) => (
                 <SwiperSlide key={item.id}>
                   <div
@@ -193,7 +256,13 @@ const Stories = () => {
           onClose={closeStory}
         />
       )}
+<CreateStoryModal
+  showCreateStoryModal={showCreateStoryModal}
+  handleCloseCreateStoryModal={handleCloseCreateStoryModal}
+/>;
     </>
+
+    
   );
 };
 

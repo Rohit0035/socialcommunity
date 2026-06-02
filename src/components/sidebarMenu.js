@@ -21,9 +21,14 @@ export const sidebarMenu = [
   { icon: IoSearch, label: "Search", link: "/main/search" },
   // { icon: MdOutlineExplore, label: "Explore", link: "/explore" },
   { icon: FaRegHeart, label: "Notifications", link: "/main/notifications" },
-  { icon: GoPlus, label: "Create", link: "/create" },
+  // { icon: GoPlus, label: "Create", link: "/create" },
   { icon: MdOutlineInsertChart, label: "Dashboard", link: "/main/dashboard" },
   { icon: CgProfile, label: "Profile", link: "/main/profile" },
+];
+
+export const createMenu = [
+  { icon: RiSettings4Line, label: "Post", link: "/main/create-post" },
+  { icon: LuSquareActivity, label: "Reel", link: "/main/create-reels" },
 ];
 
 export const moreMenu = [
