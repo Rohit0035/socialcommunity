@@ -17,7 +17,7 @@ import { CiUser } from "react-icons/ci";
 export const sidebarMenu = [
   { icon: GoHome, label: "Home", link: "/main/home" },
   { icon: CgPlayButtonR, label: "Reels", link: "/main/reels" },
-  { icon: BsFillSendFill, label: "Messages", link: "/main/home" },
+  { icon: BsFillSendFill, label: "Messages", link: "/main/message" },
   { icon: IoSearch, label: "Search", link: "/main/search" },
   // { icon: MdOutlineExplore, label: "Explore", link: "/explore" },
   { icon: FaRegHeart, label: "Notifications", link: "/main/notifications" },
@@ -33,7 +33,7 @@ export const createMenu = [
 
 export const moreMenu = [
   { icon: RiSettings4Line, label: "Settings", link: "/settings" },
-  { icon: LuSquareActivity, label: "Your activity", link: "/activity" },
+  { icon: LuSquareActivity, label: "Your activity", link: "/main/activity" },
   { icon: FaRegBookmark, label: "Saved", link: "/saved" },
   // { icon: GoHome, label: "Switch appearance", link: "/appearance" },
   { icon: TbMessageReport, label: "Report a problem", link: "/report" },

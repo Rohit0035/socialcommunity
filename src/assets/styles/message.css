@@ -1,0 +1,16 @@
+.cs-main-container {
+  height: 100vh !important;
+}
+
+.cs-message--incoming .cs-message__content {
+  background: #f1f1f1 !important;
+}
+
+.cs-message--outgoing .cs-message__content {
+  background: #0095f6 !important;
+  color: white !important;
+}
+
+.cs-conversation--active {
+  background: #f5f5f5 !important;
+}

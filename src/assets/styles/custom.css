@@ -1,3 +1,9 @@
+/* pill verticall tabs */
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff !important;
+    background-color: var( --primary-color) !important;
+}
+
 /* Swiper Navigation Custom Styling - MagicBricks Red Theme */
 
 .swiper-button-next,

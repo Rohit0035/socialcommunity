@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@auth/core": "^0.34.3",
+    "@chatscope/chat-ui-kit-react": "^2.1.1",
+    "@chatscope/chat-ui-kit-styles": "^1.4.0",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
     "aos": "^2.3.4",

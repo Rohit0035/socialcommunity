@@ -182,17 +182,6 @@ const CPPublishStep = ({
                        
                     </Row>
 
-
-
-
-
-
-
-
-
-
-
-
                     <Accordion
                         open={open}
                         toggle={toggle}
