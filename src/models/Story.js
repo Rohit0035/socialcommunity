@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongooseDelete from "mongoose-delete";
 
 const StorySchema = new mongoose.Schema(
   {
@@ -9,10 +10,23 @@ const StorySchema = new mongoose.Schema(
 
     media: String,
 
-    type: {
+    mediaType: {
       type: String,
       enum: ["image", "video"],
     },
+    storyText: String,
+    filter: String,
+    audience: String,
+    mentions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      }
+    ],
+    storyLink: String,
+    allowReplies: Boolean,
+    allowReactions: Boolean,
+    scheduleDate: Date,
 
     expiresAt: {
       type: Date,
@@ -22,7 +36,11 @@ const StorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-StorySchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+StorySchema.plugin(mongooseDelete, {
+  deletedAt: true,
+  deletedBy: true,
+  overrideMethods: "all"
+});
 
 export default mongoose.models.Story ||
   mongoose.model("Story", StorySchema);

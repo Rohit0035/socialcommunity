@@ -11,6 +11,8 @@ import '../assets/styles/friends.css';
 
 import ClientLayout from "./ClientLayout.old"; 
 import Providers from "./providers";
+import { Toaster } from "react-hot-toast";
+import BootstrapClient from "@/components/BootstrapClient";
 
 export const metadata = {
   title: "Social Community",
@@ -21,6 +23,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        <BootstrapClient />
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+        />
         <Providers>
           {children}
         </Providers>

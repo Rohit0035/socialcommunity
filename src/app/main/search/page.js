@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Container, Row, Col, Input } from "reactstrap";
 import {
@@ -9,6 +9,8 @@ import {
     FaSearch,
 } from "react-icons/fa";
 import CommentsModal from "@/components/common/CommentsModal";
+import axios from "axios";
+import SearchGrid from "@/components/searchComponent/SearchGrid";
 
   const postData = {
     user: {
@@ -36,6 +38,24 @@ const ExploreGrid = () => {
     const commentToggleMd = () => {
         setCommentModal(!commentModal);
     };
+
+     const [posts, setPosts] = useState([]);
+      const fetchPosts = async () => {
+          try {
+            const response = await axios.get(
+              "/api/posts/feed"
+            );
+      
+            setPosts(response.data.posts);
+          } catch (error) {
+            toast.error("Something went wrong");
+            console.error(error);
+          }
+        };
+      
+        useEffect(() => {
+          fetchPosts();
+        }, []);
 
     const exploreData = [
         {
@@ -146,8 +166,12 @@ const ExploreGrid = () => {
         },
     ];
 
-    const filteredData = exploreData.filter((item) =>
-        item.type.toLowerCase().includes(search.toLowerCase())
+    const filteredData = posts.filter((item) =>
+        item.mediaType.toLowerCase().includes(search.toLowerCase()) ||
+        item.user?.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.user?.username.toLowerCase().includes(search.toLowerCase()) ||
+        item.caption.toLowerCase().includes(search.toLowerCase()) ||
+        item.altText.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
@@ -196,93 +220,8 @@ const ExploreGrid = () => {
                         <Row
                             className="bg-white p-3 rounded-2"
                         >
-                            {filteredData.map((item, index) => (
-                                <Col
-                                    key={item.id}
-                                    xl="2"
-                                    lg="3"
-                                    md="4"
-                                    sm="6"
-                                    xs="6"
-                                    data-aos="zoom-in"
-                                    data-aos-delay={index * 100}
-                                    className="p-0 border border-light"
-                                >
-                                    <Link
-                                       href="#"
-                                       onClick={commentToggleMd}
-                                        style={{
-                                            textDecoration: "none",
-                                        }}
-                                    >
-                                        <div
-                                            style={{
-                                                position: "relative",
-                                                overflow: "hidden",
-                                                borderRadius: "4px",
-                                                background: "#ddd",
-                                                cursor: "pointer",
-                                                height: "320px",
-                                            }}
-                                        >
-                                            {item.type === "video" ? (
-                                                <video
-                                                    src={item.video}
-                                                    poster={item.thumbnail}
-                                                    autoPlay
-                                                    muted
-                                                    loop
-                                                    playsInline
-                                                    style={{
-                                                        width: "100%",
-                                                        height: "100%",
-                                                        objectFit: "cover",
-                                                    }}
-                                                />
-                                            ) : (
-                                                <img
-                                                    src={item.image}
-                                                    alt="explore"
-                                                    style={{
-                                                        width: "100%",
-                                                        height: "100%",
-                                                        objectFit: "cover",
-                                                    }}
-                                                />
-                                            )}
-                                            <div
-                                                style={{
-                                                    position: "absolute",
-                                                    top: "10px",
-                                                    right: "10px",
-                                                    width: "28px",
-                                                    height: "28px",
-                                                    borderRadius: "50%",
-                                                    background: "rgba(0,0,0,0.6)",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    color: "#fff",
-                                                    fontSize: "12px",
-                                                }}
-                                            >
-                                                {item.type === "video" ? (
-                                                    <FaPlay />
-                                                ) : (
-                                                    <FaImage />
-                                                )}
-                                            </div>
-                                            <div
-                                                style={{
-                                                    position: "absolute",
-                                                    inset: 0,
-                                                    background:
-                                                        "linear-gradient(to top, rgba(0,0,0,0.35), transparent)",
-                                                }}
-                                            />
-                                        </div>
-                                    </Link>
-                                </Col>
+                            {filteredData.map((post, index) => (
+                                <SearchGrid key={index} post={post} setPosts={setPosts} index={index} />
                             ))}
                         </Row>
                     </Container>
@@ -292,11 +231,11 @@ const ExploreGrid = () => {
             {/* comment modal start */}
 
             {/* comment modal */}
-            <CommentsModal
+            {/* <CommentsModal
                 isOpen={commentModal}
                 commentToggleMd={commentToggleMd}
-                postData={postData}
-            />
+                posts={posts}
+            /> */}
 
             {/* comment modal close */}
 

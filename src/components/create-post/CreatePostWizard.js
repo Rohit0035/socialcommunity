@@ -7,6 +7,7 @@ import CPFilterStep from "./steps/CPFilterStep";
 import CPPublishStep from "./steps/CPPublishStep";
 import "../../assets/styles/create-post.css";
 import { Container } from "reactstrap";
+import CPSuccessStep from "./steps/CPSuccessStep";
 const CreatePostWizard = () => {
     const [step, setStep] = useState(1);
 
@@ -39,9 +40,15 @@ const CreatePostWizard = () => {
                     {step === 3 && (
                         <CPPublishStep
                             media={media}
+                            setMedia={setMedia}
                             selectedFilter={selectedFilter}
+                            setSelectedFilter={setSelectedFilter}
                             prevStep={() => setStep(2)}
+                            nextStep={() => setStep(4)}
                         />
+                    )}
+                    {step === 4 && (
+                        <CPSuccessStep />
                     )}
                 </Container>
             </section>

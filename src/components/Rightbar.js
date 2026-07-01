@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import { Button, Popover, PopoverBody } from "reactstrap";
 import { FaLock } from "react-icons/fa";
+import { useSession } from "next-auth/react";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const usersData = [
   {
@@ -107,6 +110,10 @@ const usersData = [
 ];
 
 const Rightbar = () => {
+
+  const { data: session } = useSession()
+  const currentUser = session?.user;
+
   const [popoverOpen, setPopoverOpen] = useState(null);
   const [followState, setFollowState] = useState({});
 
@@ -120,21 +127,66 @@ const Rightbar = () => {
     }));
   };
 
+  const [suggestions, setSuggestions] = useState([]);
+  const [loadingUser, setLoadingUser] = useState(null);
+
+  const fetchSuggestions = async () => {
+    try {
+      const response = await axios.get("/api/users/suggestions");
+      setSuggestions(response.data);
+    } catch (error) {
+      toast.error("Something went wrong");
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchSuggestions();
+  }, []);
+
+  const handleFollowToggle = async (userId, isFollowing) => {
+    try {
+      setLoadingUser(userId);
+
+      if (isFollowing) {
+        await axios.delete(`/api/follows/${userId}`);
+        toast.success("Unfollowed successfully");
+      } else {
+        await axios.post("/api/follows", { followingId: userId });
+        toast.success("Followed successfully");
+      }
+      setSuggestions((prev) =>
+        prev.map((user) =>
+          user._id === userId
+            ? {
+              ...user,
+              isFollowing: !isFollowing,
+            }
+            : user
+        )
+      );
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    } finally {
+      setLoadingUser(null);
+    }
+  };
+
   return (
     <div className="position-sticky" style={{ top: "20px" }}>
       <PerfectScrollbar style={{ maxHeight: "85vh" }}>
         <div className="d-flex align-items-center justify-content-between mb-4">
           <Link href="/main/profile" className="d-flex align-items-center gap-2 text-decoration-none text-dark">
             <Image
-              src="https://i.pravatar.cc/100?img=10"
+              src={`${currentUser?.image || 'https://i.pravatar.cc/100?img=10'}`}
               width={45}
               height={45}
               className="rounded-circle"
               alt="profile"
             />
             <div>
-              <div className="fw-semibold small">king_fitness888</div>
-              <div className="text-muted small">Pradeep Nirgude</div>
+              <div className="fw-semibold small">{currentUser?.username}</div>
+              <div className="text-muted small">{currentUser?.name}</div>
             </div>
           </Link>
           <span className="text-primary small" style={{ cursor: "pointer" }}>
@@ -147,17 +199,17 @@ const Rightbar = () => {
             See all
           </Link>
         </div>
-        {usersData.map((user) => (
-          <div key={user.id} className="d-flex align-items-center justify-content-between mb-3">
+        {suggestions.map((user) => (
+          <div key={user._id} className="d-flex align-items-center justify-content-between mb-3">
             <Link
               href={`/profile/${user.username}`}
               className="d-flex align-items-center gap-2 text-decoration-none text-dark"
-              id={`user-${user.id}`}
-              onMouseEnter={() => handleMouseEnter(user.id)}
+              id={`user-${user._id}`}
+              onMouseEnter={() => handleMouseEnter(user._id)}
               onMouseLeave={handleMouseLeave}
             >
               <Image
-                src={user.img}
+                src={user.image}
                 width={40}
                 height={40}
                 className="rounded-circle"
@@ -170,26 +222,36 @@ const Rightbar = () => {
             </Link>
             <Button
               size="sm"
-              color={followState[user.id] ? "secondary" : "primary"}
-              onClick={() => toggleFollow(user.id)}
+              color={user.isFollowing ? "secondary" : "primary"}
+              disabled={loadingUser === user._id}
+              onClick={() =>
+                handleFollowToggle(
+                  user._id,
+                  user.isFollowing
+                )
+              }
             >
-              {followState[user.id] ? "Following" : "Follow"}
+              {loadingUser === user._id
+                ? "Loading..."
+                : user.isFollowing
+                  ? "Following"
+                  : "Follow"}
             </Button>
             <Popover
               trigger="legacy"
               placement="bottom"
-              isOpen={popoverOpen === user.id}
-              target={`user-${user.id}`}
+              isOpen={popoverOpen === user._id}
+              target={`user-${user._id}`}
             >
               <PopoverBody
                 style={{ width: "260px" }}
-                onMouseEnter={() => handleMouseEnter(user.id)}
+                onMouseEnter={() => handleMouseEnter(user._id)}
                 onMouseLeave={handleMouseLeave}
               >
                 <div className="text-center">
                   <div className="d-flex mb-3 align-items-center">
                     <Image
-                      src={user.img}
+                      src={`${user?.image || 'https://i.pravatar.cc/100?img=10'}`}
                       width={45}
                       height={45}
                       className="rounded-circle me-2"
@@ -239,11 +301,20 @@ const Rightbar = () => {
                   )}
                   <Button
                     size="sm"
-                    color={followState[user.id] ? "secondary" : "primary"}
-                    className="w-100"
-                    onClick={() => toggleFollow(user.id)}
+                    color={user.isFollowing ? "secondary" : "primary"}
+                    disabled={loadingUser === user._id}
+                    onClick={() =>
+                      handleFollowToggle(
+                        user._id,
+                        user.isFollowing
+                      )
+                    }
                   >
-                    {followState[user.id] ? "Following" : "Follow"}
+                    {loadingUser === user._id
+                      ? "Loading..."
+                      : user.isFollowing
+                        ? "Following"
+                        : "Follow"}
                   </Button>
 
                 </div>

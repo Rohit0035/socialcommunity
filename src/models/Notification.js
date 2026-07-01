@@ -1,72 +1,109 @@
 import mongoose from "mongoose";
+import mongooseDelete from "mongoose-delete";
 
 const NotificationSchema = new mongoose.Schema(
   {
-    // WHO RECEIVES NOTIFICATION
+    // Receiver
     recipient: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
 
-    // WHO TRIGGERED NOTIFICATION
+    // Triggered by
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
 
-    // NOTIFICATION TYPE
+    // Notification category
     type: {
       type: String,
       enum: [
-        "follow",
-        "like",
-        "comment",
+        "follow_request",
+        "follow_accepted",
+        "follow_rejected",
+        "post_like",
+        "post_comment",
         "mention",
         "message",
-        "reel_like",
-        "reel_comment",
         "saved",
+        "story_like",
+        "story_mention",
       ],
       required: true,
     },
 
-    // RELATED POST / REEL
+    // Related resources
+    story: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Story",
+      default: null,
+    },
     post: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
       default: null,
     },
 
-    // RELATED COMMENT
     comment: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
       default: null,
     },
 
-    // RELATED MESSAGE
     message: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Message",
       default: null,
     },
 
-    // OPTIONAL TEXT
+    // Thumbnail for UI
+    previewImage: {
+      type: String,
+      default: "",
+    },
+
+    // Custom message
     text: {
       type: String,
       default: "",
     },
 
-    // READ STATUS
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected"],
+      default: "pending",
+    },
+
+    // Example:
+    // "liked your reel"
+    // "commented: Awesome 🔥"
+    actionText: {
+      type: String,
+      default: "",
+    },
+
+    // Read Status
     isRead: {
       type: Boolean,
       default: false,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
+
+NotificationSchema.plugin(mongooseDelete, { 
+  deletedAt: true, 
+  deletedBy: true, 
+  overrideMethods: "all" 
+});
+
+NotificationSchema.index({ recipient: 1, isRead: 1 });
 
 export default mongoose.models.Notification ||
   mongoose.model("Notification", NotificationSchema);

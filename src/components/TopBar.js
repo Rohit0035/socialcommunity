@@ -99,7 +99,7 @@ const Topbar = () => {
 
           {/* ===== CREATE MENU ===== */}
 
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <div
               className="d-flex justify-content-between align-items-center py-2"
               style={{ cursor: "pointer" }}
@@ -129,7 +129,7 @@ const Topbar = () => {
                 })}
               </ul>
             </Collapse>
-          </div>
+          </div> */}
 
           {/* ===== MORE MENU ===== */}
 

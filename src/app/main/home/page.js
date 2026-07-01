@@ -1,6 +1,6 @@
 import { Container, Row, Col } from "reactstrap";
-import Feed from "../../../components/Feed";
-import Rightbar from "../../../components/Rightbar";
+import Feed from "@/components/Feed";
+import Rightbar from "@/components/Rightbar";
 
 export default function HomeIndex () {
   return (

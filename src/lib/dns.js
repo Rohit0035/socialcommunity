@@ -1,0 +1,4 @@
+// lib/dns.js
+import dns from "dns";
+
+dns.setServers(["1.1.1.1", "1.0.0.1"]);

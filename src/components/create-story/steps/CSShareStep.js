@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Select from "react-select";
 
@@ -22,11 +22,19 @@ import {
     FiLink,
     FiClock,
 } from "react-icons/fi";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const CSShareStep = ({
     storyMedia,
+    setStoryMedia,
     selectedFilter,
+    setSelectedFilter,
     prevStep,
+    storyText,
+    setStoryText,
+    showCreateStoryModal,
+    handleCloseCreateStoryModal,
 }) => {
 
     const [open, setOpen] = useState("");
@@ -55,6 +63,8 @@ const CSShareStep = ({
     const [selectedUsers, setSelectedUsers] =
         useState([]);
 
+    const [loading, setLoading] = useState(false);
+
     const toggle = (id) => {
         setOpen(open === id ? "" : id);
     };
@@ -70,37 +80,90 @@ const CSShareStep = ({
         },
     ];
 
-    const userOptions = [
-        {
-            value: "rohit",
-            label: "@rohit_sen",
-        },
-        {
-            value: "alex",
-            label: "@alex_king",
-        },
-        {
-            value: "john",
-            label: "@john_doe",
-        },
-        {
-            value: "rahul",
-            label: "@rahul_dev",
-        },
-    ];
+    const [collaborators, setCollaborators] = useState([]);
+      const [loadingUser, setLoadingUser] = useState(null);
+    
+      const fetchCollaborators = async () => {
+        try {
+          const response = await axios.get("/api/users/collaborators");
+          setCollaborators(response.data.map((u) => ({ value: u._id, label: u.username })));
+        } catch (error) {
+          toast.error("Something went wrong");
+          console.log(error);
+        }
+      };
+      useEffect(() => {
+        fetchCollaborators();
+      }, []);
+
+    const handleShareStory = async () => {
+        console.log("Button clicked");
+        try {
+            setLoading(true);
+
+            const formData = new FormData();
+
+            formData.append("file", storyMedia.file);
+            formData.append("storyText", storyText);
+            formData.append("selectedFilter", selectedFilter);
+            formData.append(
+                "audience",
+                selectedAudience.value
+            );
+            formData.append(
+                "mentions",
+                JSON.stringify(
+                    selectedUsers.map((u) => u.value)
+                )
+            );
+            formData.append("storyLink", storyLink);
+            formData.append(
+                "scheduleDate",
+                scheduleDate
+            );
+            formData.append(
+                "allowReplies",
+                allowReplies
+            );
+            formData.append(
+                "allowReactions",
+                allowReactions
+            );
+
+            await axios.post(
+                `/api/stories`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+            toast.success("Story shared successfully");
+
+            handleCloseCreateStoryModal(false);
+            setStoryMedia(null);
+            setStoryLink("");
+            setStoryText("");
+            setSelectedFilter("none");
+            setSelectedAudience({
+                value: "story",
+                label: "Your Story",
+            })
+            setSelectedUsers([]);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <Row className="g-0">
-
-
             <Col lg="6">
-
                 <div className="cs-final-preview-wrap">
-
                     <div className="cs-phone-preview">
-
                         {storyMedia?.type?.includes("video") ? (
-
                             <video
                                 controls
                                 className="cs-story-media"
@@ -109,31 +172,24 @@ const CSShareStep = ({
                                 }}
                             >
                                 <source
-                                    src={storyMedia.preview}
+                                    src={storyMedia?.preview}
                                 />
                             </video>
-
                         ) : (
-
                             <img
-                                src={storyMedia.preview}
+                                src={storyMedia?.preview}
                                 alt=""
                                 className="cs-story-media"
                                 style={{
                                     filter: selectedFilter,
                                 }}
                             />
-
                         )}
-
                     </div>
-
                 </div>
-
             </Col>
 
             <Col lg="6">
-
                 <div className="cs-share-panel">
                     <Row>
                         <Col md="6">
@@ -150,7 +206,7 @@ const CSShareStep = ({
                             />
                         </Col>
                         <Col md="6">
-                            <div className="cs-setting-title mt-4">
+                            <div className="cs-setting-title">
                                 <FiUsers />
                                 <span>
                                     Mention Users
@@ -160,7 +216,7 @@ const CSShareStep = ({
                                 isMulti
                                 isSearchable
                                 value={selectedUsers}
-                                options={userOptions}
+                                options={collaborators}
                                 onChange={setSelectedUsers}
                             />
                         </Col>
@@ -204,17 +260,13 @@ const CSShareStep = ({
                                 toggle={toggle}
                                 className="mt-4"
                             >
-
                                 <AccordionItem>
-
                                     <AccordionHeader targetId="1">
                                         Story Settings
                                     </AccordionHeader>
 
                                     <AccordionBody accordionId="1">
-
                                         <FormGroup switch>
-
                                             <Input
                                                 type="switch"
                                                 checked={
@@ -234,7 +286,6 @@ const CSShareStep = ({
                                         </FormGroup>
 
                                         <FormGroup switch>
-
                                             <Input
                                                 type="switch"
                                                 checked={
@@ -250,18 +301,13 @@ const CSShareStep = ({
                                             <Label check>
                                                 Allow Reactions
                                             </Label>
-
                                         </FormGroup>
-
                                     </AccordionBody>
-
                                 </AccordionItem>
-
                             </Accordion>
                         </Col>
                         <Col md="12">
                             <div className="cs-share-footer">
-
                                 <Button
                                     color="secondary"
                                     outline
@@ -270,10 +316,14 @@ const CSShareStep = ({
                                     Back
                                 </Button>
 
-                                <Button color="primary">
-                                    Share Story
+                                <Button
+                                    type="button"
+                                    color="primary"
+                                    onClick={handleShareStory}
+                                    disabled={loading}
+                                >
+                                    {loading ? "Sharing..." : "Share Story"}
                                 </Button>
-
                             </div>
                         </Col>
                     </Row>

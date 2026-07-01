@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
@@ -8,142 +8,72 @@ import "swiper/css";
 import "swiper/css/navigation";
 
 import Image from "next/image";
-import StoryViewer from "./StoryViewer";
+import axios from "axios";
+
 import { Card, CardBody } from "reactstrap";
 import { FaPlus } from "react-icons/fa";
+
+import StoryViewer from "./StoryViewer";
 import CreateStoryModal from "../create-story/CreateStoryModal";
-
-const storiesData = [
-  {
-    id: 1,
-    user: "fitnessfirst_id",
-    avatar: "https://i.pravatar.cc/150?img=10",
-    stories: [
-      { url: "https://picsum.photos/400/700?1", type: "image" },
-      { url: "https://picsum.photos/400/700?2", type: "image" },
-      { url: "https://picsum.photos/400/700?3", type: "image" },
-      { url: "https://picsum.photos/400/700?4", type: "image" },
-      { url: "https://picsum.photos/400/700?5", type: "image" },
-      { url: "https://www.pexels.com/download/video/6716513/", type: "video" },
-      { url: "https://picsum.photos/400/700?6", type: "image" },
-      { url: "https://picsum.photos/400/700?7", type: "image" },
-      { url: "https://picsum.photos/400/700?8", type: "image" },
-      { url: "https://picsum.photos/400/700?9", type: "image" }
-    ]
-  },
-  {
-    id: 2,
-    user: "coach_andy",
-    avatar: "https://i.pravatar.cc/150?img=11",
-    stories: [
-      { url: "https://picsum.photos/400/700?11", type: "image" },
-      { url: "https://picsum.photos/400/700?12", type: "image" },
-      { url: "https://www.w3schools.com/html/movie.mp4", type: "video" },
-      { url: "https://picsum.photos/400/700?13", type: "image" }
-    ]
-  },
-  {
-    id: 3,
-    user: "coach_andy",
-    avatar: "https://i.pravatar.cc/150?img=11",
-    stories: [
-      { url: "https://picsum.photos/400/700?11", type: "image" },
-      { url: "https://picsum.photos/400/700?12", type: "image" },
-      { url: "https://www.w3schools.com/html/movie.mp4", type: "video" },
-      { url: "https://picsum.photos/400/700?13", type: "image" }
-    ]
-  },
-  {
-    id: 4,
-    user: "coach_andy",
-    avatar: "https://i.pravatar.cc/150?img=11",
-    stories: [
-      { url: "https://picsum.photos/400/700?11", type: "image" },
-      { url: "https://picsum.photos/400/700?12", type: "image" },
-      { url: "https://www.w3schools.com/html/movie.mp4", type: "video" },
-      { url: "https://picsum.photos/400/700?13", type: "image" }
-    ]
-  },
-  {
-    id: 5,
-    user: "coach_andy",
-    avatar: "https://i.pravatar.cc/150?img=11",
-    stories: [
-      { url: "https://picsum.photos/400/700?11", type: "image" },
-      { url: "https://picsum.photos/400/700?12", type: "image" },
-      { url: "https://www.w3schools.com/html/movie.mp4", type: "video" },
-      { url: "https://picsum.photos/400/700?13", type: "image" }
-    ]
-  },
-  {
-    id: 6,
-    user: "coach_andy",
-    avatar: "https://i.pravatar.cc/150?img=11",
-    stories: [
-      { url: "https://picsum.photos/400/700?11", type: "image" },
-      { url: "https://picsum.photos/400/700?12", type: "image" },
-      { url: "https://www.w3schools.com/html/movie.mp4", type: "video" },
-      { url: "https://picsum.photos/400/700?13", type: "image" }
-    ]
-  },
-  {
-    id: 7,
-    user: "coach_andy",
-    avatar: "https://i.pravatar.cc/150?img=11",
-    stories: [
-      { url: "https://picsum.photos/400/700?11", type: "image" },
-      { url: "https://picsum.photos/400/700?12", type: "image" },
-      { url: "https://www.w3schools.com/html/movie.mp4", type: "video" },
-      { url: "https://picsum.photos/400/700?13", type: "image" }
-    ]
-  },
-  {
-    id: 8,
-    user: "coach_andy",
-    avatar: "https://i.pravatar.cc/150?img=11",
-    stories: [
-      { url: "https://picsum.photos/400/700?11", type: "image" },
-      { url: "https://picsum.photos/400/700?12", type: "image" },
-      { url: "https://www.w3schools.com/html/movie.mp4", type: "video" },
-      { url: "https://picsum.photos/400/700?13", type: "image" }
-    ]
-  },
-  {
-    id: 9,
-    user: "coach_andy",
-    avatar: "https://i.pravatar.cc/150?img=11",
-    stories: [
-      { url: "https://picsum.photos/400/700?11", type: "image" },
-      { url: "https://picsum.photos/400/700?12", type: "image" },
-      { url: "https://www.w3schools.com/html/movie.mp4", type: "video" },
-      { url: "https://picsum.photos/400/700?13", type: "image" }
-    ]
-  }
-];
-
+import toast from "react-hot-toast";
 
 const Stories = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  const [myStory, setMyStory] = useState(null);
+  const [otherStories, setOtherStories] = useState([]);
 
+  const [showCreateStoryModal, setShowCreateStoryModal] =
+    useState(false);
 
-  const openStory = (i) => {
-    setActiveIndex(i);
+  const handleOpenCreateStoryModal = () => {
+    setShowCreateStoryModal(true);
+  };
+
+  const handleCloseCreateStoryModal = () => {
+    setShowCreateStoryModal(false);
+  };
+
+  const openStory = (index) => {
+    setActiveIndex(index);
     setIsOpen(true);
   };
 
-  const closeStory = () => setIsOpen(false);
+  const closeStory = () => {
+    setIsOpen(false);
+	 fetchStories();
+  };
 
- const [showCreateStoryModal, setShowCreateStoryModal] = useState(false);
+  const fetchStories = async () => {
+    try {
+      const response = await axios.get(
+        "/api/stories/feed"
+      );
 
-const handleOpenCreateStoryModal = () => {
-  setShowCreateStoryModal(true);
-};
+      setMyStory(response.data.myStory || null);
+      setOtherStories(
+        response.data.otherStories || []
+      );
+    } catch (error) {
+      toast.error("Something went wrong");
+      console.error(error);
+    }
+  };
 
-const handleCloseCreateStoryModal = () => {
-  setShowCreateStoryModal(false);
-};
+  useEffect(() => {
+    fetchStories();
+  }, []);
+
+  /**
+   * Stories passed to StoryViewer
+   * Index 0 = myStory (if exists)
+   * Index 1+ = other stories
+   */
+  const viewerStories = [
+    ...(myStory ? [myStory] : []),
+    ...otherStories,
+  ];
 
   return (
     <>
@@ -154,7 +84,7 @@ const handleCloseCreateStoryModal = () => {
               modules={[Navigation]}
               navigation
               spaceBetween={8}
-              grabCursor={true}
+              grabCursor
               breakpoints={{
                 0: {
                   slidesPerView: 4,
@@ -167,102 +97,122 @@ const handleCloseCreateStoryModal = () => {
                 },
               }}
             >
-              {/* CREATE STORY */}
+              {/* ADD STORY */}
               <SwiperSlide>
                 <div
                   className="text-center"
-                  onClick={handleOpenCreateStoryModal}
-                  style={{ cursor: "pointer" }}
-                >                  <div
-                    className="
-                      position-relative
-                      mx-auto
-                      d-flex
-                      align-items-center
-                      justify-content-center
-                      rounded-circle
-                      border
-                      bg-light
-                    "
+                  onClick={
+                    handleOpenCreateStoryModal
+                  }
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  <div
+                    className="position-relative mx-auto d-flex align-items-center justify-content-center rounded-circle border bg-light"
                     style={{
                       width: 70,
                       height: 70,
                     }}
                   >
                     <FaPlus size={22} />
-                    <div
-                      className="
-                      position-absolute
-                      bottom-0
-                      end-0
-                      bg-primary
-                      text-white
-                      rounded-circle
-                      d-flex
-                      align-items-center
-                      justify-content-center
-        "
-                      style={{
-                        width: 22,
-                        height: 22,
-                        border: "2px solid #fff",
-                      }}
-                    >
-                      <FaPlus size={10} />
-                    </div>
                   </div>
+
                   <small className="d-block mt-1 text-truncate st-txt-o">
-                    Your Story
+                    Add Story
                   </small>
                 </div>
               </SwiperSlide>
-              {storiesData.map((item, i) => (
-                <SwiperSlide key={item.id}>
+
+              {/* MY STORY */}
+              {myStory && (
+                <SwiperSlide>
                   <div
                     className="text-center"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => openStory(i)}
+                    style={{
+                      cursor: "pointer",
+                    }}
+                    onClick={() =>
+                      openStory(0)
+                    }
                   >
-                    {/* Avatar */}
                     <div className="story-ring mx-auto">
                       <Image
-                        src={item.avatar}
+                        src={myStory.avatar}
                         width={70}
                         height={70}
                         className="rounded-circle story-img"
-                        alt={item.user}
+                        alt="Your Story"
                       />
                     </div>
 
-                    {/* Username */}
                     <small className="d-block mt-0 text-truncate st-txt-o">
-                      {item.user}
+                      Your Story
                     </small>
                   </div>
                 </SwiperSlide>
-              ))}
+              )}
+
+              {/* OTHER STORIES */}
+              {otherStories.map(
+                (item, index) => (
+                  <SwiperSlide
+                    key={item.id}
+                  >
+                    <div
+                      className="text-center"
+                      style={{
+                        cursor: "pointer",
+                      }}
+                      onClick={() =>
+                        openStory(
+                          myStory
+                            ? index + 1
+                            : index
+                        )
+                      }
+                    >
+                      <div className="story-ring mx-auto">
+                        <Image
+                          src={item.avatar}
+                          width={70}
+                          height={70}
+                          className="rounded-circle story-img"
+                          alt={item.user}
+                        />
+                      </div>
+
+                      <small className="d-block mt-0 text-truncate st-txt-o">
+                        {item.user}
+                      </small>
+                    </div>
+                  </SwiperSlide>
+                )
+              )}
             </Swiper>
           </CardBody>
         </Card>
-
       </div>
 
-
-      {/* Story Viewer */}
+      {/* STORY VIEWER */}
       {isOpen && (
         <StoryViewer
-          stories={storiesData}
+          stories={viewerStories}
           startIndex={activeIndex}
           onClose={closeStory}
         />
       )}
-<CreateStoryModal
-  showCreateStoryModal={showCreateStoryModal}
-  handleCloseCreateStoryModal={handleCloseCreateStoryModal}
-/>;
-    </>
 
-    
+      {/* CREATE STORY MODAL */}
+      <CreateStoryModal
+        showCreateStoryModal={
+          showCreateStoryModal
+        }
+        handleCloseCreateStoryModal={
+          handleCloseCreateStoryModal
+        }
+      />
+    </>
   );
 };
 

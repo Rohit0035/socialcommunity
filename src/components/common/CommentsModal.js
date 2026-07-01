@@ -30,12 +30,11 @@ import {
     FaSmile,
     FaTimes
 } from "react-icons/fa";
+import axios from "axios";
 
-const CommentsModal = ({ isOpen, commentToggleMd, postData }) => {
-    const [liked, setLiked] = useState(false);
-    const [saved, setSaved] = useState(false);
+const CommentsModal = ({ isOpen, commentToggleMd, post, toggleLike, loadingLike, toggleSave, loadingSave }) => {
     const [comment, setComment] = useState("");
-    const [commentsList, setCommentsList] = useState(postData?.comments || []);
+    const [commentsList, setCommentsList] = useState(post?.comments || []);
     const [loading, setLoading] = useState(false);
     const [showEmoji, setShowEmoji] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -50,20 +49,34 @@ const CommentsModal = ({ isOpen, commentToggleMd, postData }) => {
     };
 
     // ✅ POST COMMENT FUNCTION
-    const handlePost = () => {
+    const handlePost = async () => {
         if (!comment.trim()) return;
 
-        setLoading(true);
+        try {
+            setLoading(true);
 
-        setTimeout(() => {
-            setCommentsList([
-                ...commentsList,
-                { user: "you", text: comment, }
-            ]);
-            setComment("");
+            const res = await axios.post(
+            `/api/posts/comment`,
+                {
+                    text: comment,
+                    postId: post._id
+                }
+            );
+
+            if (res.data.success) {
+                setCommentsList((prev) => [
+                    ...prev,
+                    res.data.comment,
+                ]);
+
+                setComment("");
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
             setLoading(false);
-        }, 800);
-    };
+        }
+        };
 
     const handleReasonSelect = (reason) => {
         console.log("Selected:", reason);
@@ -105,17 +118,26 @@ const CommentsModal = ({ isOpen, commentToggleMd, postData }) => {
           /> */}
                     {/* LEFT MEDIA */}
                     <div className="w-50 bg-dark">
-                        <Swiper navigation modules={[Navigation]} className="w-100 h-100">
-                            {postData?.media?.map((item, i) => (
-                                <SwiperSlide key={i}>
-                                    {item.type === "image" ? (
-                                        <img src={item.url} className="w-100 h-100 rounded-0" style={{ objectFit: "cover" }} />
-                                    ) : (
-                                        <video src={item.url} controls autoPlay className="w-100 h-100" style={{ objectFit: "cover" }} />
-                                    )}
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
+                        {post?.mediaType === "image" ? (
+                            <img
+                                src={post?.media}
+                                alt="post"
+                                className="w-100 h-100"
+                                style={{
+                                    objectFit: "cover",
+                                }}
+                            />
+                        ) : (
+                            <video
+                                src={post?.media}
+                                controls
+                                autoPlay
+                                className="w-100 h-100"
+                                style={{
+                                    objectFit: "cover",
+                                }}
+                            />
+                        )}
                     </div>
 
                     {/* RIGHT CONTENT */}
@@ -124,8 +146,8 @@ const CommentsModal = ({ isOpen, commentToggleMd, postData }) => {
                         {/* HEADER */}
                         <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
                             <div className="d-flex align-items-center gap-2">
-                                <img src={postData?.user?.avatar} width="40" className="rounded-circle" />
-                                <strong>{postData?.user?.name}</strong>
+                                <img src={post?.user?.avatar} width="40" className="rounded-circle" />
+                                <strong>{post?.user?.username}</strong>
                             </div>
 
                             {/* 3 DOT MENU */}
@@ -138,12 +160,12 @@ const CommentsModal = ({ isOpen, commentToggleMd, postData }) => {
                         {/* COMMENTS */}
                         <PerfectScrollbar className="flex-grow-1 p-3">
                             <p>
-                                <strong>{postData?.user?.name}</strong> {postData?.caption}
+                                <strong>{post?.user?.username}</strong> {post?.caption}
                             </p>
 
                             {commentsList.map((c, i) => (
                                 <p key={i}>
-                                    <strong>{c.user}</strong> {c.text}
+                                    <strong>{c.user?.username}</strong> {c.text}
                                 </p>
                             ))}
                         </PerfectScrollbar>
@@ -154,8 +176,14 @@ const CommentsModal = ({ isOpen, commentToggleMd, postData }) => {
                             <div className="d-flex justify-content-between mb-2">
                                 <div className="d-flex gap-3">
 
-                                    <span onClick={() => setLiked(!liked)} style={{ cursor: "pointer" }}>
-                                        {liked ? <FaHeart color="red" size={18} /> : <FaRegHeart size={18} />}
+                                    <span onClick={() => toggleLike()} style={{ cursor: "pointer" }}>
+                                        {loadingLike ? (
+                                            <Spinner size="sm" />
+                                        ) : post.isLiked ? (
+                                            <FaHeart color="red" />
+                                        ) : (
+                                            <FaRegHeart />
+                                        )}
                                     </span>
 
                                     <Link href="#" className="text-dark">
@@ -167,13 +195,19 @@ const CommentsModal = ({ isOpen, commentToggleMd, postData }) => {
                                     </Link>
                                 </div>
 
-                                <span onClick={() => setSaved(!saved)} style={{ cursor: "pointer" }}>
-                                    {saved ? <FaBookmark /> : <FaRegBookmark />}
+                                <span onClick={() => toggleSave()} style={{ cursor: "pointer" }}>
+                                    {loadingSave ? (
+                                        <Spinner size="sm" />
+                                    ) : post.isSaved ? (
+                                        <FaBookmark />
+                                    ) : (
+                                        <FaRegBookmark />
+                                    )}
                                 </span>
                             </div>
 
-                            <p className="small"><strong>{postData?.likes} likes</strong></p>
-                            <p className="text-muted small">{postData?.date}</p>
+                            <p className="small"><strong>{post?.likesCount} likes</strong></p>
+                            <p className="text-muted small">{post?.date}</p>
 
                             {/* COMMENT INPUT */}
                             <div className="d-flex align-items-center gap-2 border-top pt-2">

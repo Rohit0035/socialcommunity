@@ -24,11 +24,10 @@ export const sidebarMenu = [
   // { icon: GoPlus, label: "Create", link: "/create" },
   { icon: MdOutlineInsertChart, label: "Dashboard", link: "/main/dashboard" },
   { icon: CgProfile, label: "Profile", link: "/main/profile" },
+  { icon: GoPlus, label: "Create", link: "/main/create-post" }
 ];
 
 export const createMenu = [
-  { icon: RiSettings4Line, label: "Post", link: "/main/create-post" },
-  { icon: LuSquareActivity, label: "Reel", link: "/main/create-reels" },
 ];
 
 export const moreMenu = [

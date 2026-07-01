@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   Row,
@@ -17,37 +17,57 @@ import {
   FaVolumeMute,
   FaVolumeUp,
 } from "react-icons/fa";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const TopPosts = () => {
-  const posts = [
-    {
-      type: "video",
-      media:
-        "https://www.w3schools.com/html/mov_bbb.mp4",
-      thumbnail:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600",
-      views: "40K",
-      likes: "9K",
-    },
+  // const posts = [
+  //   {
+  //     type: "video",
+  //     media:
+  //       "https://www.w3schools.com/html/mov_bbb.mp4",
+  //     thumbnail:
+  //       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600",
+  //     views: "40K",
+  //     likes: "9K",
+  //   },
 
-    {
-      type: "image",
-      media:
-        "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600",
-      views: "30K",
-      likes: "7K",
-    },
+  //   {
+  //     type: "image",
+  //     media:
+  //       "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600",
+  //     views: "30K",
+  //     likes: "7K",
+  //   },
 
-    {
-      type: "video",
-      media:
-        "https://www.w3schools.com/html/movie.mp4",
-      thumbnail:
-        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=600",
-      views: "22K",
-      likes: "5K",
-    },
-  ];
+  //   {
+  //     type: "video",
+  //     media:
+  //       "https://www.w3schools.com/html/movie.mp4",
+  //     thumbnail:
+  //       "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=600",
+  //     views: "22K",
+  //     likes: "5K",
+  //   },
+  // ];
+
+  const [posts, setPosts] = useState([]);
+    const fetchPosts = async () => {
+        try {
+          const response = await axios.get(
+            "/api/dashboard/top-posts"
+          );
+    
+          setPosts(response.data.topPosts);
+        } catch (error) {
+          toast.error("Something went wrong");
+          console.error(error);
+        }
+      };
+    
+      useEffect(() => {
+        fetchPosts();
+      }, []);
 
   return (
     <Card className="border-0 shadow-sm rounded-4">
@@ -115,7 +135,7 @@ const PostCard = ({ post }) => {
       }}
     >
       {/* IMAGE */}
-      {post.type === "image" && (
+      {post.mediaType === "image" && (
         <img
           src={post.media}
           alt="post"
@@ -127,7 +147,7 @@ const PostCard = ({ post }) => {
       )}
 
       {/* VIDEO */}
-      {post.type === "video" && (
+      {post.mediaType === "video" && (
         <>
           <video
             ref={videoRef}
@@ -140,6 +160,7 @@ const PostCard = ({ post }) => {
             loop
             muted
             playsInline
+            controls
           >
             <source
               src={post.media}
@@ -195,12 +216,12 @@ const PostCard = ({ post }) => {
         <div className="d-flex justify-content-between align-items-center text-white">
           <div className="small fw-semibold">
             <FaEye className="me-2" />
-            {post.views}
+            {post.viewsCount || 0}
           </div>
 
           <div className="small fw-semibold">
             <FaHeart className="me-2 text-danger" />
-            {post.likes}
+            {post.likesCount}
           </div>
         </div>
       </div>

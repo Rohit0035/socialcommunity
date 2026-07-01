@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
     Container,
@@ -19,101 +19,206 @@ import {
     FaSearch,
     FaUserPlus,
     FaCommentDots,
-    FaBell
+    FaBell,
+    FaUser,
+    FaUserCheck,
+    FaUserTimes
 } from "react-icons/fa";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { formatDistanceToNow } from "date-fns";
 
 const NotificationPage = () => {
 
     const [activeTab, setActiveTab] = useState("all");
     const [search, setSearch] = useState("");
 
+    const [notifications, setNotifications] = useState([]);
+    const [suggestions, setSuggestions] = useState([]);
+    const [loadingUser, setLoadingUser] = useState(null);
+
+    const fetchSuggestions = async () => {
+        try {
+            const response = await axios.get("/api/users/suggestions");
+            setSuggestions(response.data);
+        } catch (error) {
+            toast.error("Something went wrong");
+            console.log(error);
+        }
+    };
+
+    const fetchNotifications = async () => {
+        try {
+            const response = await axios.get("/api/notifications");
+            setNotifications(response.data);
+        } catch (error) {
+            toast.error("Something went wrong");
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications();
+        fetchSuggestions();
+    }, []);
+
+    const handleFollowToggle = async (userId, isFollowing) => {
+        try {
+            setLoadingUser(userId);
+
+            if (isFollowing) {
+                await axios.delete(`/api/follows/${userId}`);
+                toast.success("Unfollowed successfully");
+            } else {
+                await axios.post("/api/follows", { followingId: userId });
+                toast.success("Followed successfully");
+            }
+            setSuggestions((prev) =>
+                prev.map((user) =>
+                    user._id === userId
+                        ? {
+                            ...user,
+                            isFollowing: !isFollowing,
+                        }
+                        : user
+                )
+            );
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong");
+        } finally {
+            setLoadingUser(null);
+        }
+    };
+
+    const handleConfirmFollow = async (notificationId, userId) => {
+        try {
+            await axios.post("/api/follows/accept", {
+                notificationId
+            });
+
+            toast.success("Follow request accepted");
+
+            setNotifications((prev) =>
+                prev.filter((n) => n._id !== notificationId)
+            );
+        } catch (error) {
+            toast.error("Something went wrong");
+        }
+    };
+
+    const handleDeleteFollowRequest = async (notificationId) => {
+        try {
+            await axios.post(
+                `/api/follows/reject`,
+                { notificationId },
+            );
+
+            toast.success("Request deleted");
+
+            setNotifications((prev) =>
+                prev.filter((n) => n._id !== notificationId)
+            );
+        } catch (error) {
+            toast.error("Something went wrong");
+        }
+    };
+
     const filterTabs = [
         { key: "all", label: "All" },
-        { key: "follow", label: "People you follow" },
-        { key: "comments", label: "Comments" },
-        { key: "likes", label: "Likes" },
-        { key: "mentions", label: "Mentions" },
-        { key: "reels", label: "Reels" },
-        { key: "messages", label: "Messages" },
+        { key: "follow_request", label: "Follow Requests" },
+        { key: "post_comment", label: "Comments" },
+        { key: "post_like", label: "Likes" },
+        { key: "mention", label: "Mentions" },
+        { key: "reel_like", label: "Reels" },
+        { key: "message", label: "Messages" },
         { key: "saved", label: "Saved" },
     ];
 
-    const notifications = [
-        {
-            id: 1,
-            type: "likes",
-            username: "rahul_dev",
-            image:
-                "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=500",
-            message: "liked your reel 🔥",
-            followers: "12.5k",
-            time: "2m ago",
-        },
+    // const notifications = [
+    //     {
+    //         id: 1,
+    //         type: "likes",
+    //         username: "rahul_dev",
+    //         image:
+    //             "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=500",
+    //         message: "liked your reel 🔥",
+    //         followers: "12.5k",
+    //         time: "2m ago",
+    //     },
 
-        {
-            id: 2,
-            type: "comments",
-            username: "amit_ui",
-            image:
-                "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=500",
-            message: "commented: Awesome 👏",
-            followers: "8.1k",
-            time: "10m ago",
-        },
+    //     {
+    //         id: 2,
+    //         type: "comments",
+    //         username: "amit_ui",
+    //         image:
+    //             "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=500",
+    //         message: "commented: Awesome 👏",
+    //         followers: "8.1k",
+    //         time: "10m ago",
+    //     },
 
-        {
-            id: 3,
-            type: "follow",
-            username: "social_boy",
-            image:
-                "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500",
-            message: "started following you",
-            followers: "30k",
-            time: "20m ago",
-        },
+    //     {
+    //         id: 3,
+    //         type: "follow",
+    //         username: "social_boy",
+    //         image:
+    //             "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500",
+    //         message: "started following you",
+    //         followers: "30k",
+    //         time: "20m ago",
+    //     },
 
-        {
-            id: 4,
-            type: "likes",
-            username: "travel_world",
-            image:
-                "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=500",
-            message: "liked your post ❤️",
-            followers: "6k",
-            time: "1h ago",
-        },
-    ];
+    //     {
+    //         id: 4,
+    //         type: "likes",
+    //         username: "travel_world",
+    //         image:
+    //             "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=500",
+    //         message: "liked your post ❤️",
+    //         followers: "6k",
+    //         time: "1h ago",
+    //     },
+    // ];
 
-    const suggestions = [
-        {
-            id: 1,
-            username: "rj_patel_777",
-            name: "Rahul Patel",
-            image:
-                "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=500",
-            followers: "Followed by dayalupatel + 1 more",
-        },
+    // const suggestions = [
+    //     {
+    //         id: 1,
+    //         username: "rj_patel_777",
+    //         name: "Rahul Patel",
+    //         image:
+    //             "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=500",
+    //         followers: "Followed by dayalupatel + 1 more",
+    //     },
 
-        {
-            id: 2,
-            username: "amit_k_vish",
-            name: "Amit Vishwakarma",
-            image:
-                "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500",
-            followers: "Followed by dayalupatel",
-        },
-    ];
+    //     {
+    //         id: 2,
+    //         username: "amit_k_vish",
+    //         name: "Amit Vishwakarma",
+    //         image:
+    //             "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500",
+    //         followers: "Followed by dayalupatel",
+    //     },
+    // ];
 
-    const filteredNotifications = notifications.filter((item) => {
+    const filteredNotifications =
+        notifications.filter((item) => {
+            const username =
+                item.sender?.username || "";
 
-        const searchMatch =
-            item.username.toLowerCase().includes(search.toLowerCase()) ||
-            item.followers.toLowerCase().includes(search.toLowerCase());
+            const searchMatch =
+                username
+                    .toLowerCase()
+                    .includes(search.toLowerCase());
 
-        if (activeTab === "all") return searchMatch;
+            if (activeTab === "all")
+                return searchMatch;
 
-        return item.type === activeTab && searchMatch;
-    });
+            return (
+                item.type === activeTab &&
+                searchMatch
+            );
+        });
 
     return (
         <>
@@ -141,7 +246,6 @@ const NotificationPage = () => {
                         className="position-relative mb-4"
                         data-aos="zoom-in"
                     >
-
                         <FaSearch
                             className="position-absolute"
                             style={{
@@ -162,7 +266,6 @@ const NotificationPage = () => {
                                 background: "#fafafa"
                             }}
                         />
-
                     </div>
                     <div
                         className="overflow-auto mb-5"
@@ -171,20 +274,16 @@ const NotificationPage = () => {
                             scrollbarWidth: "none"
                         }}
                     >
-
                         <Nav
                             pills
                             className="flex-nowrap gap-3"
                         >
-
                             {filterTabs.map((tab, index) => (
-
                                 <NavItem
                                     key={tab.key}
                                     data-aos="fade-up"
                                     data-aos-delay={index * 80}
                                 >
-
                                     <NavLink
                                         active={activeTab === tab.key}
                                         onClick={() => setActiveTab(tab.key)}
@@ -210,9 +309,7 @@ const NotificationPage = () => {
                                     >
                                         {tab.label}
                                     </NavLink>
-
                                 </NavItem>
-
                             ))}
 
                         </Nav>
@@ -260,9 +357,7 @@ const NotificationPage = () => {
                     </div> */}
 
                     <div className="mb-5">
-
                         <div className="d-flex align-items-center justify-content-between mb-4">
-
                             <h5 className="fw-bold mb-0">
                                 Recent Activity
                             </h5>
@@ -274,116 +369,148 @@ const NotificationPage = () => {
                             >
                                 {filteredNotifications.length} New
                             </Badge>
-
                         </div>
 
                         {filteredNotifications.map((item, index) => (
 
                             <div
-                                key={item.id}
-                                data-aos="fade-up"
-                                data-aos-delay={index * 100}
-                                className="d-flex align-items-center justify-content-between flex-wrap gap-3 p-3 p-lg-4 rounded-4  mb-3"
+                                key={item._id}
+                                className={`d-flex align-items-center justify-content-between gap-3 p-3 rounded-4 mb-3 ${!item.isRead
+                                    ? "border border-success-subtle"
+                                    : ""
+                                    }`}
                                 style={{
-                                    background: "#fafafa",
-                                    borderColor: "#f1f1f1"
+                                    background: item.isRead
+                                        ? "#fafafa"
+                                        : "#f0fff8",
                                 }}
                             >
-
                                 <div className="d-flex align-items-center gap-3">
-
                                     <img
-                                        src={item.image}
-                                        alt="user"
+                                        src={
+                                            item.sender?.image ||
+                                            "/images/user.png"
+                                        }
+                                        alt=""
                                         className="rounded-circle"
                                         style={{
-                                            width: "70px",
-                                            height: "70px",
-                                            objectFit: "cover"
+                                            width: 60,
+                                            height: 60,
+                                            objectFit: "cover",
                                         }}
                                     />
 
                                     <div>
-
-                                        <div className="d-flex align-items-center gap-2 flex-wrap">
-
-                                            <h6 className="fw-bold mb-0">
-                                                {item.username}
-                                            </h6>
-
-                                            <Badge
-                                                pill
-                                                color="info"
-                                                className="px-3 py-1"
-                                               
-                                            >
-                                                {item.followers}
-                                            </Badge>
-
+                                        <div className="fw-bold">
+                                            {item.sender?.username || item.sender?.name}
                                         </div>
 
-                                        <p className="text-muted mb-1 mt-1">
-                                            {item.message}
-                                        </p>
+                                        <div className="text-muted">
+                                            <span>
+                                                {item.actionText}
+                                            </span>
+                                        </div>
 
                                         <small className="text-secondary">
-                                            {item.time}
+                                            {formatDistanceToNow(item.createdAt)}
                                         </small>
-
                                     </div>
-
                                 </div>
 
-                                <div>
+                                <div className="d-flex align-items-center gap-3">
+                                    {item.previewImage && (
+                                        <img
+                                            src={item.previewImage}
+                                            alt=""
+                                            style={{
+                                                width: 55,
+                                                height: 55,
+                                                borderRadius: 12,
+                                                objectFit: "cover",
+                                            }}
+                                        />
+                                    )}
 
-                                    {item.type === "likes" && (
+                                    {item.type.includes("like") && (
                                         <FaHeart
                                             style={{
                                                 color: "#ff3040",
-                                                fontSize: "24px"
+                                                fontSize: 22,
                                             }}
                                         />
                                     )}
 
-                                    {item.type === "comments" && (
+                                    {item.type.includes("comment") && (
                                         <FaCommentDots
                                             style={{
                                                 color: "#00b894",
-                                                fontSize: "24px"
+                                                fontSize: 22,
                                             }}
                                         />
                                     )}
 
-                                    {item.type === "follow" && (
-                                        <FaUserPlus
+                                    {item.type === "follow_request" && (
+                                        <div className="d-flex gap-2">
+                                            <Button
+                                                color="primary"
+                                                size="sm"
+                                                onClick={() =>
+                                                    handleConfirmFollow(
+                                                        item._id,
+                                                        item.sender._id
+                                                    )
+                                                }
+                                            >
+                                                Confirm
+                                            </Button>
+
+                                            <Button
+                                                color="light"
+                                                size="sm"
+                                                className="border"
+                                                onClick={() =>
+                                                    handleDeleteFollowRequest(
+                                                        item._id
+                                                    )
+                                                }
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    )}
+
+                                    {item.type === "follow_accepted" && (
+                                        <FaUserCheck
                                             style={{
                                                 color: "#00b894",
-                                                fontSize: "24px"
+                                                fontSize: 22,
                                             }}
                                         />
                                     )}
-
+                                    {item.type === "follow_rejected" && (
+                                        <FaUserTimes
+                                            style={{
+                                                color: "#e17055",
+                                                fontSize: 22,
+                                            }}
+                                        />
+                                    )}
                                 </div>
-
                             </div>
-
                         ))}
-
                     </div>
 
                     <div>
-
                         <div className="d-flex align-items-center justify-content-between mb-4">
                             <h5 className="fw-bold mb-0">
                                 Suggested for you
                             </h5>
-                           
                         </div>
                         <Row>
                             {suggestions.map((item, index) => (
                                 <Col
                                     lg="6"
-                                    key={item.id}
+                                    key={item._id}
                                     data-aos="zoom-in"
                                     data-aos-delay={index * 120}
                                 >
@@ -395,7 +522,6 @@ const NotificationPage = () => {
                                         }}
                                     >
                                         <div className="d-flex align-items-center gap-3">
-
                                             <img
                                                 src={item.image}
                                                 alt="user"
@@ -407,7 +533,6 @@ const NotificationPage = () => {
                                                 }}
                                             />
                                             <div>
-
                                                 <h6 className="fw-bold mb-1">
                                                     {item.username}
                                                 </h6>
@@ -417,34 +542,31 @@ const NotificationPage = () => {
                                                 </div>
 
                                                 <small className="text-muted">
-                                                    {item.followers}
+                                                    Followers: {item.followers}
                                                 </small>
-
                                             </div>
-
                                         </div>
 
                                         <Button
                                             className="border-0 rounded-3 fw-bold  btn btn-primary btn-sm"
+                                            color={item.isFollowing ? "secondary" : "primary"}
+                                            disabled={loadingUser === item._id}
+                                            onClick={() => handleFollowToggle(item._id, item.isFollowing)}
                                         >
-                                            Follow
+                                            {loadingUser === item._id
+                                                ? "Loading..."
+                                                : item.isFollowing
+                                                    ? "Following"
+                                                    : "Follow"}
                                         </Button>
-
                                     </div>
-
                                 </Col>
-
                             ))}
-
                         </Row>
-
                     </div>
-
                 </Container>
             </section>
         </>
-
-
     );
 };
 

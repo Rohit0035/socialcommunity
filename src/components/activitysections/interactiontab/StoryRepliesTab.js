@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
     Row,
@@ -16,6 +16,8 @@ import {
     Badge,
 } from "reactstrap";
 import { FiMessageCircle } from "react-icons/fi";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const StoryRepliesTab = () => {
     const [filterModal, setFilterModal] = useState(false);
@@ -27,6 +29,23 @@ const StoryRepliesTab = () => {
         from: "",
         to: "",
     });
+
+    const fetchStoryReplies = async () => {
+            try {
+                const response = await axios.get(
+                    "/api/your-activity/story-replies"
+                );
+    
+                setStoryReplies(response.data.stats);
+            } catch (error) {
+                toast.error("Something went wrong");
+                console.error(error);
+            }
+        };
+    
+        useEffect(() => {
+            fetchStoryReplies();
+        }, []);
 
     const [storyReplies, setStoryReplies] = useState([
         {

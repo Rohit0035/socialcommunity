@@ -52,14 +52,14 @@ const Sidebar = () => {
       </div>
 
       {/* create */}
-       <UncontrolledDropdown className="mb-3">
+       {/* <UncontrolledDropdown className="mb-3">
         <DropdownToggle color="light" className="sidebar-item d-flex align-items-center px-3 py-2 w-100">
           <FaPlus size={22} />
           {!collapsed && <span className="label">Create</span>}
         </DropdownToggle>
         <DropdownMenu className="border-0 bg-light shadow-sm">
           {createMenu.map((item, i) => {
-            const Icon = item.icon; // <-- ADD THIS
+            const Icon = item.icon; 
 
             return (
               item.label === "Log out" ?
@@ -69,7 +69,7 @@ const Sidebar = () => {
                  onClick={() => handleClick(item.label)}
                     className="sidebar-item d-flex align-items-center py-2 px-2"
                   >
-                    <Icon className="icon fs-5" /> {/* now it works */}
+                    <Icon className="icon fs-5" />
                     <span className="label">{item.label}</span>
                   </Link>
                 </DropdownItem> :
@@ -78,7 +78,7 @@ const Sidebar = () => {
                     href={item.link}
                     className="sidebar-item d-flex align-items-center py-2 px-2"
                   >
-                    <Icon className="icon fs-5" /> {/* now it works */}
+                    <Icon className="icon fs-5" />
                     <span className="label">{item.label}</span>
                   </Link>
                 </DropdownItem>
@@ -86,7 +86,7 @@ const Sidebar = () => {
           })}
         </DropdownMenu>
 
-      </UncontrolledDropdown>
+      </UncontrolledDropdown> */}
 
       {/* MORE DROPDOWN */}
       <UncontrolledDropdown className="mb-3">

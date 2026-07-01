@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
     Button,
@@ -12,6 +12,8 @@ import {
     Label,
     Input,
 } from "reactstrap";
+import axios from "axios";
+import { formatDistanceToNow } from "date-fns";
 
 const CommentsTab = () => {
     const [filterModal, setFilterModal] = useState(false);
@@ -63,6 +65,23 @@ const CommentsTab = () => {
             src: "https://picsum.photos/100?random=14",
         },
     ]);
+
+    const fetchComments = async () => {
+            try {
+                const response = await axios.get(
+                    "/api/your-activity/comments"
+                );
+    
+                setComments(response.data.comments);
+            } catch (error) {
+                toast.error("Something went wrong");
+                console.error(error);
+            }
+        };
+    
+        useEffect(() => {
+            fetchComments();
+        }, []);
 
     const toggleSelectionMode = () => {
         if (selectionMode) {
@@ -149,12 +168,12 @@ const CommentsTab = () => {
 
             <div className="border rounded overflow-hidden bg-white">
 
-                {filteredComments.map((item) => (
+                {filteredComments.map((item,index) => (
                     <div
-                        key={item.id}
+                        key={index}
                         className="d-flex justify-content-between align-items-start px-3 py-3 border-bottom"
                         onClick={() =>
-                            selectionMode && handleSelectItem(item.id)
+                            selectionMode && handleSelectItem(item._id)
                         }
                         style={{
                             cursor: selectionMode ? "pointer" : "default",
@@ -163,20 +182,18 @@ const CommentsTab = () => {
                         <div className="d-flex gap-3 flex-grow-1">
                             <div className="">
                                 <Image
-                                    src={item.avatar}
-                                    alt={item.username}
+                                    src={item?.user?.image}
+                                    alt={item.user?.username}
                                     width={45}
                                     height={45}
                                     className="rounded-circle"
                                 />
                             </div>
 
-
-
                             <div className="flex-grow-1">
 
                                 <div className="fw-semibold">
-                                    {item.username}
+                                    {item.user?.username}
                                 </div>
 
                                 <div className="small">
@@ -184,7 +201,7 @@ const CommentsTab = () => {
                                 </div>
 
                                 <small className="text-muted">
-                                    {item.timeAgo}
+                                    {item?.createdAt && formatDistanceToNow(item?.createdAt)}
                                 </small>
 
                             </div>
@@ -193,20 +210,40 @@ const CommentsTab = () => {
 
                         <div className="d-flex align-items-center gap-3">
 
-                            <Image
+                            {/* <Image
                                 src={item.src}
                                 alt=""
                                 width={50}
                                 height={50}
                                 className="rounded"
-                            />
+                            /> */}
+                            {
+                                    item?.post?.mediaType === "image" ? (
+                                        
+                                        <Image
+                                            src={item?.post?.media}
+                                            alt={item.username}
+                                            width={45}
+                                            height={45}
+                                            className="rounded"
+                                        />
+                                    ):(
+                                        <video
+                                            src={item?.post?.media}
+                                            alt={item.username}
+                                            width={45}
+                                            height={45}
+                                            className="rounded"
+                                        />
+                                    )
+                                }
 
                             {selectionMode && (
                                 <Input
                                     type="checkbox"
-                                    checked={selectedItems.includes(item.id)}
+                                    checked={selectedItems.includes(item._id)}
                                     onChange={() =>
-                                        handleSelectItem(item.id)
+                                        handleSelectItem(item._id)
                                     }
                                     onClick={(e) =>
                                         e.stopPropagation()

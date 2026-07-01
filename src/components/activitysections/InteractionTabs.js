@@ -62,17 +62,17 @@ const InteractionTabs = () => {
         <CommentsTab/>
         </TabPane>
 
-        <TabPane tabId="reposts">
+        {/* <TabPane tabId="reposts">
            <RepostsTab/>
-        </TabPane>
+        </TabPane> */}
 
-        <TabPane tabId="replies">
+        {/* <TabPane tabId="replies">
           <StoryRepliesTab/>
-        </TabPane>
+        </TabPane> */}
 
-        <TabPane tabId="reviews">
+        {/* <TabPane tabId="reviews">
         <ReviewsTab/>
-        </TabPane>
+        </TabPane> */}
       </TabContent>
     </>
   );

@@ -22,6 +22,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react"; // ADD THIS
 import debounce from "lodash/debounce";
+import toast from "react-hot-toast";
 
 const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
@@ -196,7 +197,7 @@ const RegisterPage = () => {
       const res = await axios.post("/api/auth/register", payload);
 
       if (res.data) {
-        alert("Account Created");
+        toast.success("Account Created");
         
         router.push("/auth/login");
       }

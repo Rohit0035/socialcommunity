@@ -4,25 +4,25 @@ import { Modal, ModalHeader, ModalBody } from "reactstrap";
 import CreateStoryWizard from "./CreateStoryWizard";
 
 const CreateStoryModal = ({
-  showCreateStoryModal,
-  handleCloseCreateStoryModal,
+	showCreateStoryModal,
+	handleCloseCreateStoryModal,
 }) => {
-  return (
-    <Modal
-      isOpen={showCreateStoryModal}
-      toggle={handleCloseCreateStoryModal}
-      size="xl"
-      centered
-    >
-      <ModalHeader toggle={handleCloseCreateStoryModal}>
-        Create Story
-      </ModalHeader>
+	return (
+		<Modal
+			isOpen={showCreateStoryModal}
+			toggle={handleCloseCreateStoryModal}
+			size="xl"
+			centered
+		>
+			<ModalHeader toggle={handleCloseCreateStoryModal}>
+				Create Story
+			</ModalHeader>
 
-      <ModalBody>
-        <CreateStoryWizard />
-      </ModalBody>
-    </Modal>
-  );
+			<ModalBody>
+				<CreateStoryWizard showCreateStoryModal={showCreateStoryModal} handleCloseCreateStoryModal={handleCloseCreateStoryModal}/>
+			</ModalBody>
+		</Modal>
+	);
 };
 
 export default CreateStoryModal;

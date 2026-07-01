@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
     Row,
@@ -16,6 +16,8 @@ import {
     Input,
 } from "reactstrap";
 import { FiStar } from "react-icons/fi";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const ReviewsTab = () => {
     const [filterModal, setFilterModal] = useState(false);
@@ -78,6 +80,23 @@ const ReviewsTab = () => {
             thumbnail: "https://picsum.photos/600?random=26",
         },
     ]);
+
+    const fetchReviews = async () => {
+            try {
+                const response = await axios.get(
+                    "/api/your-activity/reviews"
+                );
+    
+                setReviews(response.data.stats);
+            } catch (error) {
+                toast.error("Something went wrong");
+                console.error(error);
+            }
+        };
+    
+        useEffect(() => {
+            fetchReviews();
+        }, []);
 
     const toggleSelectionMode = () => {
         if (selectionMode) {

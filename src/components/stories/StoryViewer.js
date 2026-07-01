@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Col, Container, Modal, ModalBody, Row } from "reactstrap";
 import Stories from "react-insta-stories";
 import Image from "next/image";
 import { FaTimes } from "react-icons/fa";
+import axios from "axios";
 
 const StoryViewer = ({ stories, startIndex, onClose }) => {
     const [userIndex, setUserIndex] = useState(startIndex);
@@ -17,6 +18,37 @@ const StoryViewer = ({ stories, startIndex, onClose }) => {
             setUserIndex(userIndex + 1);
         } else {
             onClose();
+        }
+    };
+
+    const viewedStories = useRef(new Set());
+
+    const handleStoryStart = async (storyIndex) => {
+        const story =
+            currentUser?.stories?.[storyIndex];
+
+        if (!story?.id) return;
+
+        // Own stories
+        if (currentUser.isMine) return;
+
+        // Already viewed
+        if (story.viewed) return;
+
+        if (viewedStories.current.has(story.id))
+            return;
+
+        viewedStories.current.add(story.id);
+
+        try {
+            await axios.post(
+                "/api/stories/view",
+                {
+                    storyId: story.id,
+                }
+            );
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -71,15 +103,19 @@ const StoryViewer = ({ stories, startIndex, onClose }) => {
                                     {/* 🔥 STORIES */}
                                     <Stories
                                         key={userIndex}
-                                        stories={currentUser.stories.map((item) => ({
-                                            url: item.url,
-                                            type: item.type || "image"
-                                        }))}
+                                        stories={currentUser.stories.map(
+                                            (item) => ({
+                                                url: item.url,
+                                                type:
+                                                    item.type || "image",
+                                            })
+                                        )}
                                         defaultInterval={3000}
                                         width="100%"
                                         height="100%"
-                                        onAllStoriesEnd={handleAllEnd}
                                         keyboardNavigation
+                                        onAllStoriesEnd={handleAllEnd}
+                                        onStoryStart={handleStoryStart}
                                     />
 
                                 </div>

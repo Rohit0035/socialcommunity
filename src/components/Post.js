@@ -12,7 +12,8 @@ import {
   PopoverBody,
   Button,
   Container,
-  Row
+  Row,
+  Spinner
 } from "reactstrap";
 
 import {
@@ -31,56 +32,110 @@ import { Navigation } from "swiper/modules";
 import { BsFillSendFill } from "react-icons/bs";
 import CommentsModal from "./common/CommentsModal";
 import ShareModal from "./common/ShareModal";
+import axios from "axios";
+import toast from "react-hot-toast";
 
-/* ✅ 6 MEDIA DATA (IMAGE + VIDEO MIX) */
-const mediaData = [
-  { type: "video", src: "https://www.w3schools.com/html/mov_bbb.mp4" },
-  { type: "image", src: "https://picsum.photos/800/600?1" },
-
-  // { type: "image", src: "https://picsum.photos/800/600?2" },
-  // { type: "video", src: "https://www.w3schools.com/html/mov_bbb.mp4" },
-  // { type: "image", src: "https://picsum.photos/800/600?3" },
-  // { type: "image", src: "https://picsum.photos/800/600?4" },
-];
-
-
-  const postData = {
-    user: {
-      name: "fitnessfirst_id",
-      avatar: "https://i.pravatar.cc/50"
-    },
-    media: [
-      { type: "image", url: "https://picsum.photos/800/600?1" },
-      { type: "image", url: "https://picsum.photos/800/600?1" },
-      { type: "video", url: "https://www.w3schools.com/html/mov_bbb.mp4" }
-    ],
-    caption: "Special Ramadan promo! 💪🔥",
-    comments: [
-      { user: "john", text: "Nice 🔥" },
-      { user: "alex", text: "Love it 😍" }
-    ],
-    likes: 42,
-    date: "March 12"
-  };
-
-const Post = () => {
+const Post = ({ post,setPosts }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [likes, setLikes] = useState(19300);
-  const [comments] = useState(587);
+
+  // const [liked, setLiked] = useState(
+  //   post.isLiked || false
+  // );
+
+  // const [saved, setSaved] = useState(
+  //   post.isSaved || false
+  // );
+
+  // const [likes, setLikes] = useState(
+  //   post.likesCount || 0
+  // );
+
+  // const [comments] = useState(
+  //   post.commentsCount || 0
+  // );
+
   const [expanded, setExpanded] = useState(false);
   const [translated, setTranslated] = useState(false);
   const [commentModal, setCommentModal] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [loadingLike, setLoadingLike] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
 
   const commentToggleMd = () => {
     setCommentModal(!commentModal);
   };
 
-  const toggleLike = () => {
-    setLiked(!liked);
-    setLikes(liked ? likes - 1 : likes + 1);
+  const toggleLike = async () => {
+    try {
+      setLoadingLike(true);
+      const res = await axios.post(
+        "/api/posts/toggle-like",
+        {
+          postId: post._id,
+        }
+      );
+
+      if (res.data.success) {
+        setPosts((prev) =>
+          prev.map((p) => {
+            if (p._id === post._id) {
+              return {
+                ...p,
+                isLiked: res.data.liked,
+                likesCount: res.data.likesCount,
+              };
+            }
+            return p;
+          })
+        );
+        if (res.data.liked) {
+          toast.success("Post liked successfully");
+        } else {
+          toast.success("Post unliked successfully");
+        }
+
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingLike(false);
+    }
+  };
+
+  const toggleSave = async () => {
+    try {
+      setLoadingSave(true);
+      const res = await axios.post(
+        "/api/posts/toggle-save",
+        {
+          postId: post._id,
+        }
+      );
+
+      if (res.data.success) {
+        setPosts((prev) =>
+          prev.map((p) => {
+            if (p._id === post._id) {
+              return {
+                ...p,
+                isSaved: res.data.saved,
+              };
+            }
+            return p;
+          })
+        );
+        if (res.data.saved) {
+          toast.success("Post saved successfully");
+        } else {
+          toast.success("Post unsaved successfully");
+        }
+
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingSave(false);
+    }
   };
 
   return (
@@ -94,7 +149,10 @@ const Post = () => {
 
               <div id="profileHover">
                 <Image
-                  src="https://i.pravatar.cc/100?img=5"
+                  src={
+                    post.user?.image ||
+                    "/images/default-avatar.png"
+                  }
                   width={35}
                   height={35}
                   className="rounded-circle"
@@ -102,8 +160,11 @@ const Post = () => {
                 />
               </div>
 
-              <Link href="/profile/dr.shruthi_sharmaa" id="profileHover" className="fw-bold text-dark small text-decoration-none">
-                dr.shruthi_sharmaa
+              <Link
+                href={`/profile/${post.user?.username}`}
+                className="fw-bold text-dark small text-decoration-none"
+              >
+                {post.user?.username}
               </Link>
 
               {/* POPOVER */}
@@ -112,14 +173,17 @@ const Post = () => {
                   <div className="text-center">
                     <div className="d-flex mb-3 align-items-center">
                       <Image
-                        src="https://i.pravatar.cc/100?img=5"
+                        src={
+                          post.user?.image ||
+                          "/images/default-avatar.png"
+                        }
                         width={45}
                         height={45}
                         className="rounded-circle me-2"
                         alt="user"
                       />
                       <div className="text-start">
-                        <p className="mb-0 small fw-bold">dr.shruthi_sharmaa</p>
+                        <p className="mb-0 small fw-bold">{post.user?.username}</p>
                         <small className="bg-light px-2 py-1 d-inline-block mt-1">
                           Lorem ipsum
                         </small>
@@ -153,36 +217,35 @@ const Post = () => {
             <FaEllipsisH onClick={() => setMenuOpen(true)} style={{ cursor: "pointer" }} />
           </div>
 
-          <Swiper modules={[Navigation]}
-            navigation>
-            {mediaData.map((item, i) => (
-              <SwiperSlide key={i}>
-                <div style={{ height: "450px", overflow: "hidden" }}>
-                  {item.type === "image" ? (
-                    <Image
-                      src={item.src}
-                      width={800}
-                      height={600}
-                      className="w-100 h-100"
-                      style={{ objectFit: "cover" }}
-                      alt="post"
-                    />
-                  ) : (
-                    <video
-                      src={item.src}
-                      className="w-100 h-100"
-                      style={{ objectFit: "cover" }}
-                      muted
-                      loop
-                      autoPlay
-                      playsInline
-                      controls
-                    />
-                  )}
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          <div
+            style={{
+              height: "450px",
+              overflow: "hidden",
+            }}
+          >
+            {post.mediaType === "image" ? (
+              <Image
+                src={post.media}
+                width={800}
+                height={600}
+                alt="post"
+                className="w-100 h-100"
+                style={{
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <video
+                src={post.media}
+                className="w-100 h-100"
+                style={{
+                  objectFit: "cover",
+                }}
+                controls
+                playsInline
+              />
+            )}
+          </div>
 
           {/* ACTION BAR */}
           <div className="d-flex justify-content-between px-3 py-2">
@@ -191,19 +254,36 @@ const Post = () => {
 
               {/* LIKE */}
               <div className="d-flex align-items-center gap-1">
-                <span onClick={toggleLike} style={{ cursor: "pointer" }}>
-                  {liked ? <FaHeart color="red" /> : <FaRegHeart />}
+                <span
+                  onClick={!loadingLike ? toggleLike : undefined}
+                  style={{ cursor: loadingLike ? "not-allowed" : "pointer" }}
+                >
+                  {loadingLike ? (
+                    <Spinner size="sm" />
+                  ) : post.isLiked ? (
+                    <FaHeart color="red" />
+                  ) : (
+                    <FaRegHeart />
+                  )}
                 </span>
-                <small>{likes}</small>
+                {!post.hideLikeAndViewCount && (
+                  <small>{post.likesCount}</small>
+                )}
               </div>
 
               {/* COMMENT */}
-              <div className="d-flex align-items-center gap-1">
-                <Link href="#" onClick={commentToggleMd} className="text-dark">
-                  <FaRegComment className="me-1"/>
-                  <small>{comments}</small>
-                </Link>
-              </div>
+              {!post.turnOffCommenting && (
+                <div className="d-flex align-items-center gap-1">
+                  <Link
+                    href="#"
+                    onClick={commentToggleMd}
+                    className="text-dark"
+                  >
+                    <FaRegComment className="me-1" />
+                    <small>{post.commentsCount}</small>
+                  </Link>
+                </div>
+              )}
 
 
               {/* Share */}
@@ -215,8 +295,19 @@ const Post = () => {
             </div>
 
             {/* BOOKMARK */}
-            <div onClick={() => setSaved(!saved)} style={{ cursor: "pointer" }}>
-              {saved ? <FaBookmark /> : <FaRegBookmark />}
+            <div
+              onClick={!loadingSave ? toggleSave : undefined}
+              style={{
+                cursor: loadingSave ? "not-allowed" : "pointer",
+              }}
+            >
+              {loadingSave ? (
+                <Spinner size="sm" />
+              ) : post.isSaved ? (
+                <FaBookmark />
+              ) : (
+                <FaRegBookmark />
+              )}
             </div>
 
           </div>
@@ -224,35 +315,50 @@ const Post = () => {
           {/* COMMENTS PREVIEW */}
           <div className="px-3 small">
             <Link href="/post/1" className="text-muted text-decoration-none">
-              View all {comments} comments
+              View all {post.commentCount} comments
             </Link>
 
-            <div className="mt-1">
-              <b>rahul_dev</b> Amazing content 🔥
-            </div>
+            {post.latestComment && (
+              <div className="mt-1">
+                <b>
+                  {
+                    post.latestComment.user
+                      ?.username
+                  }
+                </b>{" "}
+                {post.latestComment.text}
+              </div>
+            )}
           </div>
 
           {/* CAPTION */}
           <div className="px-3 pb-2 small">
-            <b>dr.shruthi_sharmaa</b>{" "}
+            <b>
+              {post.user?.username}
+            </b>{" "}
 
-            {translated ? (
-              "हम अद्भुत क्षमता और मन की शक्ति रखते हैं क्योंकि हम सनातन धर्म से हैं..."
-            ) : (
-              expanded
-                ? "We are capable of incredible capacitance, incredible power of mind because we belong from sanatan dharma..."
-                : "We are capable of incredible capacitance..."
-            )}
+            {expanded
+              ? post.caption
+              : post.caption?.slice(
+                0,
+                120
+              )}
 
-            {!expanded && !translated && (
-              <span
-                className="text-muted ms-1"
-                style={{ cursor: "pointer" }}
-                onClick={() => setExpanded(true)}
-              >
-                more
-              </span>
-            )}
+            {post.caption?.length >
+              120 &&
+              !expanded && (
+                <span
+                  className="text-muted ms-1"
+                  style={{
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    setExpanded(true)
+                  }
+                >
+                  more
+                </span>
+              )}
           </div>
 
           {/* TRANSLATION TOGGLE */}
@@ -311,15 +417,19 @@ const Post = () => {
       </Modal>
 
 
-       {/* comment modal */}
+      {/* comment modal */}
       <CommentsModal
         isOpen={commentModal}
         commentToggleMd={commentToggleMd}
-        postData={postData}
+        post={post}
+        toggleLike={toggleLike}
+        loadingLike={loadingLike}
+        toggleSave={toggleSave}
+        loadingSave={loadingSave}
       />
-      
-       {/* share modal */}
-       <ShareModal isOpen={shareOpen} toggle={() => setShareOpen(!shareOpen)} />
+
+      {/* share modal */}
+      <ShareModal isOpen={shareOpen} toggle={() => setShareOpen(!shareOpen)} />
 
     </>
   );

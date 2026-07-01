@@ -58,7 +58,7 @@ const MobileBottomBar = () => {
           })}
 
           {/* CREATE MENU */}
-          <UncontrolledDropdown direction="up">
+          {/* <UncontrolledDropdown direction="up">
 
             <DropdownToggle
               color="white"
@@ -117,7 +117,7 @@ const MobileBottomBar = () => {
 
             </DropdownMenu>
 
-          </UncontrolledDropdown>
+          </UncontrolledDropdown> */}
 
         </div>
 

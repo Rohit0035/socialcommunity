@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
     Row,
@@ -15,6 +15,8 @@ import {
     Input,
 } from "reactstrap";
 import { FiVideo, FiCopy } from "react-icons/fi";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const LikesTab = () => {
     const [filterModal, setFilterModal] = useState(false);
@@ -65,6 +67,23 @@ const LikesTab = () => {
             src: "https://picsum.photos/600?random=6",
         },
     ]);
+
+    const fetchLikes = async () => {
+        try {
+            const response = await axios.get(
+                "/api/your-activity/likes"
+            );
+
+            setMediaItems(response.data.likes);
+        } catch (error) {
+            toast.error("Something went wrong");
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchLikes();
+    }, []);
 
     const toggleSelectionMode = () => {
         if (selectionMode) {
@@ -157,8 +176,8 @@ const LikesTab = () => {
             </div>
 
             <Row className="g-1">
-                {filteredMedia.map((item) => (
-                    <Col xs="6" md="4" lg="3" key={item.id}>
+                {filteredMedia.map((item, index) => (
+                    <Col xs="6" md="4" lg="3" key={index}>
                         <div
                             className="position-relative overflow-hidden"
                             style={{ aspectRatio: "1 / 1" }}
@@ -168,17 +187,17 @@ const LikesTab = () => {
                                 <div className="position-absolute top-0 start-0 p-2 z-3">
                                     <Input
                                         type="checkbox"
-                                        checked={selectedItems.includes(item.id)}
+                                        checked={selectedItems.includes(item._id)}
                                         onChange={() =>
-                                            handleSelectItem(item.id)
+                                            handleSelectItem(item._id)
                                         }
                                     />
                                 </div>
                             )}
 
-                            {item.type === "image" ? (
+                            {item?.post?.mediaType === "image" ? (
                                 <Image
-                                    src={item.src}
+                                    src={item?.post?.media}
                                     alt=""
                                     fill
                                     style={{ objectFit: "cover" }}
@@ -191,16 +210,12 @@ const LikesTab = () => {
                                     playsInline
                                     className="w-100 h-100"
                                     style={{ objectFit: "cover" }}
-                                >
-                                    <source
-                                        src={item.src}
-                                        type="video/mp4"
-                                    />
-                                </video>
+                                    src={item?.post?.media}
+                                />
                             )}
 
                             <div className="position-absolute top-0 end-0 p-2 text-white z-3">
-                                {item.type === "video" ? (
+                                {item?.post?.mediaType === "video" ? (
                                     <FiVideo size={18} />
                                 ) : (
                                     <FiCopy size={18} />

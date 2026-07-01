@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
   Row,
@@ -15,6 +15,7 @@ import {
   Input,
 } from "reactstrap";
 import { FiVideo, FiCopy } from "react-icons/fi";
+import axios from "axios";
 
 const Poststab = ({ title = "Media", actionLabel = "Delete" }) => {
   const [filterModal, setFilterModal] = useState(false);
@@ -60,6 +61,24 @@ const Poststab = ({ title = "Media", actionLabel = "Delete" }) => {
       src: "https://picsum.photos/600?random=104",
     },
   ]);
+
+  const [posts, setPosts] = useState([]);
+  const fetchPosts = async () => {
+      try {
+        const response = await axios.get(
+          "/api/posts/feed"
+        );
+  
+        setPosts(response.data.posts);
+      } catch (error) {
+        toast.error("Something went wrong");
+        console.error(error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchPosts();
+    }, []);
 
   const [dateRange, setDateRange] = useState({
     from: "",

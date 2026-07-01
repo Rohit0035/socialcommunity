@@ -21,9 +21,7 @@ const CSUploadStep = ({
   const fileRef = useRef();
 
   const handleUpload = (e) => {
-
     const file = e.target.files[0];
-
     if (!file) return;
 
     setStoryMedia({
@@ -35,13 +33,9 @@ const CSUploadStep = ({
 
   return (
     <Card className="cs-main-card">
-
       <CardBody>
-
         {!storyMedia ? (
-
           <div className="cs-upload-wrapper">
-
             <BsImages className="cs-upload-icon" />
 
             <h4>
@@ -64,15 +58,10 @@ const CSUploadStep = ({
               accept="image/*,video/*"
               onChange={handleUpload}
             />
-
           </div>
-
         ) : (
-
           <div className="cs-preview-wrapper">
-
             {storyMedia.type.includes("video") ? (
-
               <video
                 controls
                 className="cs-story-preview"
@@ -81,19 +70,15 @@ const CSUploadStep = ({
                   src={storyMedia.preview}
                 />
               </video>
-
             ) : (
-
               <img
                 src={storyMedia.preview}
                 alt=""
                 className="cs-story-preview"
               />
-
             )}
 
             <div className="mt-4">
-
               <Button
                 color="secondary"
                 className="me-2"
@@ -112,13 +97,9 @@ const CSUploadStep = ({
               </Button>
 
             </div>
-
           </div>
-
         )}
-
       </CardBody>
-
     </Card>
   );
 };

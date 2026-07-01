@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Row, Col, Button, Input } from "reactstrap";
 import { FiVideo, FiCopy } from "react-icons/fi";
+import axios from "axios";
 
 const RepostsTab = () => {
     const [activeTab, setActiveTab] = useState("posts");
@@ -37,6 +38,23 @@ const RepostsTab = () => {
 
     const currentData =
         activeTab === "posts" ? posts : reposts;
+
+        const fetchReposts = async () => {
+                try {
+                    const response = await axios.get(
+                        "/api/your-activity/reposts"
+                    );
+        
+                    setReposts(response.data.stats);
+                } catch (error) {
+                    toast.error("Something went wrong");
+                    console.error(error);
+                }
+            };
+        
+            useEffect(() => {
+                fetchReposts();
+            }, []);
 
     const toggleSelectionMode = () => {
         setSelectionMode(!selectionMode);

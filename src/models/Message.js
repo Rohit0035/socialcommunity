@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongooseDelete from "mongoose-delete";
 
 const MessageSchema = new mongoose.Schema(
   {
@@ -23,6 +24,12 @@ const MessageSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+MessageSchema.plugin(mongooseDelete, { 
+  deletedAt: true, 
+  deletedBy: true, 
+  overrideMethods: "all" 
+});
 
 export default mongoose.models.Message ||
   mongoose.model("Message", MessageSchema);

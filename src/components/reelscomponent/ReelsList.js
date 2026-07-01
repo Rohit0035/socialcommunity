@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   Container,
@@ -36,6 +36,8 @@ import "swiper/css/navigation";
 
 import Image from "next/image";
 import "../../assets/styles/reelview.css";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 /* ✅ DUMMY REELS DATA */
 const reelsData = [
@@ -60,6 +62,7 @@ const ReelsList = () => {
   const [paused, setPaused] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  const [reels, setReels] = useState([]);
 
   const videoRefs = useRef([]);
 
@@ -94,6 +97,23 @@ const ReelsList = () => {
     setPaused(false);
   };
 
+    const fetchReels = async () => {
+        try {
+          const response = await axios.get(
+            "/api/reels"
+          );
+    
+          setReels(response.data.reels);
+        } catch (error) {
+          toast.error("Something went wrong");
+          console.error(error);
+        }
+      };
+    
+      useEffect(() => {
+        fetchReels();
+      }, []);
+
   return (
     <div style={{ height: "95vh", background: "#000", borderRadius: '10px' }}>
       <Container fluid>
@@ -111,7 +131,7 @@ const ReelsList = () => {
               className="rv-swiper"
               style={{ height: "95vh" }}
             >
-              {reelsData.map((item, index) => (
+              {reels.map((item, index) => (
                 <SwiperSlide key={item.id}>
                   <div className="rv-slide">
 
@@ -146,7 +166,7 @@ const ReelsList = () => {
                     {/* 🎥 VIDEO */}
                     <video
                       ref={(el) => (videoRefs.current[index] = el)}
-                      src={item.video}
+                      src={item.media}
                       muted={muted}
                       loop
                       autoPlay={index === active}
@@ -168,7 +188,7 @@ const ReelsList = () => {
                       {/* LIKE */}
                       <Link href="#" id={`like-${item.id}`} className="rv-vertical-icons text-white text-center">
                         <FaHeart />
-                        <p className="small my-0 text-white">29K</p>
+                        <p className="small my-0 text-white">{item.likesCount}</p>
                       </Link>
 
                       <UncontrolledTooltip target={`like-${item.id}`} placement="left">
@@ -178,7 +198,7 @@ const ReelsList = () => {
                       {/* COMMENT */}
                       <Link href="#" id={`comment-${item.id}`} className="rv-vertical-icons text-white text-center">
                         <FaComment />
-                        <p className="small my-0 text-white">115</p>
+                        <p className="small my-0 text-white">{item.commentsCount}</p>
                       </Link>
 
                       <UncontrolledTooltip target={`comment-${item.id}`} placement="left">
@@ -188,7 +208,7 @@ const ReelsList = () => {
                       {/* SHARE */}
                       <Link href="#" id={`share-${item.id}`} className="rv-vertical-icons text-white text-center">
                         <FaShare />
-                        <p className="small my-0 text-white">130</p>
+                        <p className="small my-0 text-white">{item.sharesCount || 0}</p>
                       </Link>
 
                       <UncontrolledTooltip target={`share-${item.id}`} placement="left">
@@ -202,7 +222,7 @@ const ReelsList = () => {
                         id={`bookmark-${item.id}`}
                         className="rv-vertical-icons fw-bold text-white text-decoration-none text-center"
                       >
-                        {saved ? <FaBookmark /> : <FaRegBookmark />}
+                        {item.isSaved ? <FaBookmark /> : <FaRegBookmark />}
                       </Link>
                       <UncontrolledTooltip target={`bookmark-${item.id}`} placement="left">
                         Bookmark
