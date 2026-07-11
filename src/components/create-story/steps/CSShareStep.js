@@ -35,6 +35,7 @@ const CSShareStep = ({
     setStoryText,
     showCreateStoryModal,
     handleCloseCreateStoryModal,
+    fetchStories
 }) => {
 
     const [open, setOpen] = useState("");
@@ -142,6 +143,7 @@ const CSShareStep = ({
             toast.success("Story shared successfully");
 
             handleCloseCreateStoryModal(false);
+            fetchStories();
             setStoryMedia(null);
             setStoryLink("");
             setStoryText("");

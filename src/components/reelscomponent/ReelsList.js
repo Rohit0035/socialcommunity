@@ -3,29 +3,29 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
-  Container,
-  Row,
-  Col,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledTooltip,
-  Button
+	Container,
+	Row,
+	Col,
+	UncontrolledDropdown,
+	DropdownToggle,
+	DropdownMenu,
+	DropdownItem,
+	UncontrolledTooltip,
+	Button
 } from "reactstrap";
 
 import {
-  FaVolumeMute,
-  FaVolumeUp,
-  FaHeart,
-  FaComment,
-  FaShare,
-  FaEllipsisH,
-  FaPlay,
-  FaLink,
-  FaFlag,
-  FaBookmark,
-  FaRegBookmark,
+	FaVolumeMute,
+	FaVolumeUp,
+	FaHeart,
+	FaComment,
+	FaShare,
+	FaEllipsisH,
+	FaPlay,
+	FaLink,
+	FaFlag,
+	FaBookmark,
+	FaRegBookmark,
 } from "react-icons/fa";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -39,253 +39,261 @@ import "../../assets/styles/reelview.css";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-/* ✅ DUMMY REELS DATA */
-const reelsData = [
-  {
-    id: 1,
-    video: "https://www.w3schools.com/html/mov_bbb.mp4"
-  },
-  {
-    id: 2,
-    video: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
-  },
-  {
-    id: 3,
-    video: "https://www.w3schools.com/html/movie.mp4"
-  }
-];
-
 const ReelsList = () => {
-  const [active, setActive] = useState(0);
-  const [muted, setMuted] = useState(false);
-  const [volume, setVolume] = useState(0.7);
-  const [paused, setPaused] = useState(false);
-  const [saved, setSaved] = useState(false);
+	const [active, setActive] = useState(0);
+	const [muted, setMuted] = useState(false);
+	const [volume, setVolume] = useState(0.7);
+	const [paused, setPaused] = useState(false);
+	const [saved, setSaved] = useState(false);
+	const [reels, setReels] = useState([]);
 
-  const [reels, setReels] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const videoRefs = useRef([]);
 
-  const videoRefs = useRef([]);
+	/* ▶️ PLAY / PAUSE */
+	const togglePlay = () => {
+		const vid = videoRefs.current[active];
+		if (!vid) return;
 
-  /* ▶️ PLAY / PAUSE */
-  const togglePlay = () => {
-    const vid = videoRefs.current[active];
-    if (!vid) return;
+		if (vid.paused) {
+			vid.play();
+			setPaused(false);
+		} else {
+			vid.pause();
+			setPaused(true);
+		}
+	};
 
-    if (vid.paused) {
-      vid.play();
-      setPaused(false);
-    } else {
-      vid.pause();
-      setPaused(true);
-    }
-  };
+	/* 🔄 SLIDE CHANGE */
+	const handleSlideChange = (swiper) => {
+		setActive(swiper.activeIndex);
 
-  /* 🔄 SLIDE CHANGE */
-  const handleSlideChange = (swiper) => {
-    setActive(swiper.activeIndex);
+		videoRefs.current.forEach((vid, i) => {
+			if (vid) {
+				if (i === swiper.activeIndex) vid.play();
+				else {
+					vid.pause();
+					vid.currentTime = 0;
+				}
+			}
+		});
 
-    videoRefs.current.forEach((vid, i) => {
-      if (vid) {
-        if (i === swiper.activeIndex) vid.play();
-        else {
-          vid.pause();
-          vid.currentTime = 0;
-        }
-      }
-    });
+		setPaused(false);
+	};
 
-    setPaused(false);
-  };
+	const fetchReels = async () => {
+		try {
+			setLoading(true);
 
-    const fetchReels = async () => {
-        try {
-          const response = await axios.get(
-            "/api/reels"
-          );
-    
-          setReels(response.data.reels);
-        } catch (error) {
-          toast.error("Something went wrong");
-          console.error(error);
-        }
-      };
-    
-      useEffect(() => {
-        fetchReels();
-      }, []);
+			const response = await axios.get("/api/reels");
 
-  return (
-    <div style={{ height: "95vh", background: "#000", borderRadius: '10px' }}>
-      <Container fluid>
-        <Row>
-          {/* <Col lg="4"></Col> */}
+			setReels(response.data.reels || []);
+		} catch (error) {
+			toast.error("Something went wrong");
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-          <Col lg="12" className="p-0">
+	useEffect(() => {
+		fetchReels();
+	}, []);
 
-            <Swiper
-              direction="vertical"
-              modules={[Navigation, Mousewheel]}
-              mousewheel
-              navigation
-              onSlideChange={handleSlideChange}
-              className="rv-swiper"
-              style={{ height: "95vh" }}
-            >
-              {reels.map((item, index) => (
-                <SwiperSlide key={item.id}>
-                  <div className="rv-slide">
+	return (
+		<div style={{ height: "95vh", background: "#000", borderRadius: '10px' }}>
+			<Container fluid>
+				<Row>
+					{/* <Col lg="4"></Col> */}
 
-                    {/* 🔊 VOLUME */}
-                    <div className="rv-volume">
-                      <span onClick={() => setMuted(!muted)}>
-                        {muted ? (
-                          <FaVolumeMute className="text-white" />
-                        ) : (
-                          <FaVolumeUp className="text-white" />
-                        )}
-                      </span>
+					<Col lg="12" className="p-0">
+						{loading ? (
+							<div
+								className="d-flex justify-content-center align-items-center"
+								style={{ height: "95vh" }}
+							>
+								<h5 className="text-white">Loading reels...</h5>
+							</div>
+						) : reels.length === 0 ? (
+							<div
+								className="d-flex flex-column justify-content-center align-items-center text-center"
+								style={{ height: "95vh", color: "#fff" }}
+							>
+								<div style={{ fontSize: "60px" }}>🎬</div>
 
-                      <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        value={muted ? 0 : volume}
-                        onChange={(e) => {
-                          const val = parseFloat(e.target.value);
-                          setVolume(val);
-                          setMuted(val === 0);
+								<h3 className="mt-3">No reels yet</h3>
 
-                          videoRefs.current.forEach((v) => {
-                            if (v) v.volume = val;
-                          });
-                        }}
-                      />
-                    </div>
+								<p className="text-secondary mb-0" style={{ maxWidth: "350px" }}>
+									There are no reels available at the moment. Be the first to upload one and
+									start sharing with the community!
+								</p>
+							</div>
+						) : (
+							<Swiper
+								direction="vertical"
+								modules={[Navigation, Mousewheel]}
+								mousewheel
+								navigation
+								onSlideChange={handleSlideChange}
+								className="rv-swiper"
+								style={{ height: "95vh" }}
+							>
+								{reels.map((item, index) => (
+									<SwiperSlide key={item.id}>
+										<div className="rv-slide">
 
-                    {/* 🎥 VIDEO */}
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      src={item.media}
-                      muted={muted}
-                      loop
-                      autoPlay={index === active}
-                      playsInline
-                      className="rv-video"
-                      onClick={togglePlay}
-                    />
+											{/* 🔊 VOLUME */}
+											<div className="rv-volume">
+												<span onClick={() => setMuted(!muted)}>
+													{muted ? (
+														<FaVolumeMute className="text-white" />
+													) : (
+														<FaVolumeUp className="text-white" />
+													)}
+												</span>
 
-                    {/* ▶ PLAY ICON */}
-                    {paused && (
-                      <div className="rv-play">
-                        <FaPlay />
-                      </div>
-                    )}
+												<input
+													type="range"
+													min="0"
+													max="1"
+													step="0.01"
+													value={muted ? 0 : volume}
+													onChange={(e) => {
+														const val = parseFloat(e.target.value);
+														setVolume(val);
+														setMuted(val === 0);
 
-                    {/* 👉 RIGHT ACTIONS */}
-                    <div className="rv-actions">
+														videoRefs.current.forEach((v) => {
+															if (v) v.volume = val;
+														});
+													}}
+												/>
+											</div>
 
-                      {/* LIKE */}
-                      <Link href="#" id={`like-${item.id}`} className="rv-vertical-icons text-white text-center">
-                        <FaHeart />
-                        <p className="small my-0 text-white">{item.likesCount}</p>
-                      </Link>
+											{/* 🎥 VIDEO */}
+											<video
+												ref={(el) => (videoRefs.current[index] = el)}
+												src={item.media}
+												muted={muted}
+												loop
+												autoPlay={index === active}
+												playsInline
+												className="rv-video"
+												onClick={togglePlay}
+											/>
 
-                      <UncontrolledTooltip target={`like-${item.id}`} placement="left">
-                        Like
-                      </UncontrolledTooltip>
+											{/* ▶ PLAY ICON */}
+											{paused && (
+												<div className="rv-play">
+													<FaPlay />
+												</div>
+											)}
 
-                      {/* COMMENT */}
-                      <Link href="#" id={`comment-${item.id}`} className="rv-vertical-icons text-white text-center">
-                        <FaComment />
-                        <p className="small my-0 text-white">{item.commentsCount}</p>
-                      </Link>
+											{/* 👉 RIGHT ACTIONS */}
+											<div className="rv-actions">
 
-                      <UncontrolledTooltip target={`comment-${item.id}`} placement="left">
-                        Comment
-                      </UncontrolledTooltip>
+												{/* LIKE */}
+												<Link href="#" id={`like-${item.id}`} className="rv-vertical-icons text-white text-center">
+													<FaHeart />
+													<p className="small my-0 text-white">{item.likesCount}</p>
+												</Link>
 
-                      {/* SHARE */}
-                      <Link href="#" id={`share-${item.id}`} className="rv-vertical-icons text-white text-center">
-                        <FaShare />
-                        <p className="small my-0 text-white">{item.sharesCount || 0}</p>
-                      </Link>
+												<UncontrolledTooltip target={`like-${item.id}`} placement="left">
+													Like
+												</UncontrolledTooltip>
 
-                      <UncontrolledTooltip target={`share-${item.id}`} placement="left">
-                        Share
-                      </UncontrolledTooltip>
+												{/* COMMENT */}
+												<Link href="#" id={`comment-${item.id}`} className="rv-vertical-icons text-white text-center">
+													<FaComment />
+													<p className="small my-0 text-white">{item.commentsCount}</p>
+												</Link>
+
+												<UncontrolledTooltip target={`comment-${item.id}`} placement="left">
+													Comment
+												</UncontrolledTooltip>
+
+												{/* SHARE */}
+												<Link href="#" id={`share-${item.id}`} className="rv-vertical-icons text-white text-center">
+													<FaShare />
+													<p className="small my-0 text-white">{item.sharesCount || 0}</p>
+												</Link>
+
+												<UncontrolledTooltip target={`share-${item.id}`} placement="left">
+													Share
+												</UncontrolledTooltip>
 
 
-                      {/* bookmark */}
-                      <Link
-                        href={{void:(0)}}
-                        id={`bookmark-${item.id}`}
-                        className="rv-vertical-icons fw-bold text-white text-decoration-none text-center"
-                      >
-                        {item.isSaved ? <FaBookmark /> : <FaRegBookmark />}
-                      </Link>
-                      <UncontrolledTooltip target={`bookmark-${item.id}`} placement="left">
-                        Bookmark
-                      </UncontrolledTooltip>
+												{/* bookmark */}
+												<Link
+													href={{ void: (0) }}
+													id={`bookmark-${item.id}`}
+													className="rv-vertical-icons fw-bold text-white text-decoration-none text-center"
+												>
+													{item.isSaved ? <FaBookmark /> : <FaRegBookmark />}
+												</Link>
+												<UncontrolledTooltip target={`bookmark-${item.id}`} placement="left">
+													Bookmark
+												</UncontrolledTooltip>
 
-                      {/* MENU */}
-                      <UncontrolledDropdown direction="start">
-                        <DropdownToggle tag="span" className="text-white">
-                          <FaEllipsisH />
-                        </DropdownToggle>
+												{/* MENU */}
+												<UncontrolledDropdown direction="start">
+													<DropdownToggle tag="span" className="text-white">
+														<FaEllipsisH />
+													</DropdownToggle>
 
-                        <DropdownMenu white className="rel-drp">
-                          <DropdownItem>
-                            <FaBookmark className="me-2" /> Save
-                          </DropdownItem>
-                          <DropdownItem>
-                            <FaLink className="me-2" /> Copy link
-                          </DropdownItem>
-                          <DropdownItem>
-                            <FaFlag className="me-2" /> Report
-                          </DropdownItem>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
+													<DropdownMenu white className="rel-drp">
+														<DropdownItem>
+															<FaBookmark className="me-2" /> Save
+														</DropdownItem>
+														<DropdownItem>
+															<FaLink className="me-2" /> Copy link
+														</DropdownItem>
+														<DropdownItem>
+															<FaFlag className="me-2" /> Report
+														</DropdownItem>
+													</DropdownMenu>
+												</UncontrolledDropdown>
 
-                    </div>
+											</div>
 
-                    {/* 👇 BOTTOM */}
-                    <div className="rv-bottom">
+											{/* 👇 BOTTOM */}
+											<div className="rv-bottom">
 
-                      <div className="d-flex align-items-center gap-2">
-                        <Image
-                          src="https://i.pravatar.cc/40"
-                          width={35}
-                          height={35}
-                          className="rounded-circle"
-                          alt="user"
-                        />
+												<div className="d-flex align-items-center gap-2">
+													<Image
+														src="https://i.pravatar.cc/40"
+														width={35}
+														height={35}
+														className="rounded-circle"
+														alt="user"
+													/>
 
-                        <span className="text-white fw-bold small">
-                          Bolly Window ✔
-                          <small className="w-100 d-block">🎵 Trending Audio Track</small>
-                        </span>
+													<span className="text-white fw-bold small">
+														{item.user?.name}
+														<small className="w-100 d-block">🎵 Trending Audio Track</small>
+													</span>
 
-                        <span className="text-white small">
-                          <Button className="btn btn-primary btn-sm">Follow</Button>
-                        </span>
-                      </div>
-                      <span className="text-white small">
-                        #reels #viral #trending
-                      </span>
-                    </div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+													<span className="text-white small">
+														<Button className="btn btn-primary btn-sm">Follow</Button>
+													</span>
+												</div>
+												<span className="text-white small">
+													#reels #viral #trending
+												</span>
+											</div>
+										</div>
+									</SwiperSlide>
+								))}
+							</Swiper>
+						)}
 
-          </Col>
+					</Col>
 
-          {/* <Col lg="4"></Col> */}
-        </Row>
-      </Container>
-    </div>
-  );
+					{/* <Col lg="4"></Col> */}
+				</Row>
+			</Container>
+		</div>
+	);
 };
 
 export default ReelsList;

@@ -2,49 +2,41 @@ import path from "path";
 import fs from "fs/promises";
 
 export async function uploadImage(file, folder = "uploads") {
-  try {
-    if (!file || !file.name) {
-      return null;
-    }
+	try {
+		if (!file || !file.name) {
+			return null;
+		}
 
-    // FILE BUFFER
-    const bytes = await file.arrayBuffer();
+		// FILE BUFFER
+		const bytes = await file.arrayBuffer();
+		const buffer = Buffer.from(bytes);
 
-    const buffer = Buffer.from(bytes);
+		// SAFE FILE NAME
+		const fileName = Date.now() + "-" + file.name.replaceAll(" ", "-");
 
-    // SAFE FILE NAME
-    const fileName =
-      Date.now() +
-      "-" +
-      file.name.replaceAll(" ", "-");
+		// 1. CHOOSE THE BASE DIRECTORY AUTOMATICALLY
+		const baseDir =
+			process.env.NODE_ENV === "production"
+				? process.env.UPLOAD_DIR
+				: path.join(process.cwd(), "public");
 
-    // UPLOAD DIRECTORY
-    const uploadDir = path.join(
-      process.cwd(),
-      "public",
-      folder
-    );
+		// 2. JOIN THE SUBFOLDER DYNAMICALLY
+		const uploadDir = path.join(baseDir, folder);
 
-    // CREATE FOLDER
-    await fs.mkdir(uploadDir, {
-      recursive: true,
-    });
+		// CREATE FOLDER (fs.mkdir will automatically create the subfolder if it doesn't exist)
+		await fs.mkdir(uploadDir, { recursive: true });
 
-    // FULL PATH
-    const filePath = path.join(
-      uploadDir,
-      fileName
-    );
+		// FULL PATH TO FILE
+		const filePath = path.join(uploadDir, fileName);
 
-    // SAVE FILE
-    await fs.writeFile(filePath, buffer);
+		// SAVE FILE
+		await fs.writeFile(filePath, buffer);
 
-    // RETURN PUBLIC URL
-    return `/${folder}/${fileName}`;
+		// RETURN PUBLIC URL (Always uniform for your frontend)
+		return `/${folder}/${fileName}`;
 
-  } catch (error) {
-    console.log(error);
-
-    throw new Error("Image upload failed");
-  }
+	} catch (error) {
+		console.error(error);
+		throw new Error("Image upload failed");
+	}
 }

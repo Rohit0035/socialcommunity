@@ -6,7 +6,7 @@ import CSUploadStep from "./steps/CSUploadStep";
 import CSEditStep from "./steps/CSEditStep";
 import CSShareStep from "./steps/CSShareStep";
 import "../../assets/styles/create-story.css"
-const CreateStoryWizard = ({ showCreateStoryModal, handleCloseCreateStoryModal }) => {
+const CreateStoryWizard = ({ showCreateStoryModal, handleCloseCreateStoryModal,fetchStories }) => {
     const [step, setStep] = useState(1);
     const [storyMedia, setStoryMedia] = useState(null);
     const [selectedFilter, setSelectedFilter] =
@@ -51,6 +51,8 @@ const CreateStoryWizard = ({ showCreateStoryModal, handleCloseCreateStoryModal }
                     
                     handleCloseCreateStoryModal={handleCloseCreateStoryModal}
                     showCreateStoryModal={showCreateStoryModal}
+
+                    fetchStories={fetchStories}
                 />
             )}
         </>

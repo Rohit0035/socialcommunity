@@ -6,6 +6,7 @@ import CreateStoryWizard from "./CreateStoryWizard";
 const CreateStoryModal = ({
 	showCreateStoryModal,
 	handleCloseCreateStoryModal,
+	fetchStories
 }) => {
 	return (
 		<Modal
@@ -19,7 +20,7 @@ const CreateStoryModal = ({
 			</ModalHeader>
 
 			<ModalBody>
-				<CreateStoryWizard showCreateStoryModal={showCreateStoryModal} handleCloseCreateStoryModal={handleCloseCreateStoryModal}/>
+				<CreateStoryWizard showCreateStoryModal={showCreateStoryModal} handleCloseCreateStoryModal={handleCloseCreateStoryModal} fetchStories={fetchStories}/>
 			</ModalBody>
 		</Modal>
 	);

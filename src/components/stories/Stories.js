@@ -211,6 +211,7 @@ const Stories = () => {
         handleCloseCreateStoryModal={
           handleCloseCreateStoryModal
         }
+        fetchStories={fetchStories}
       />
     </>
   );
